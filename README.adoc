@@ -1,0 +1,2 @@
+java -jar app.jar --server.port=9090
+tutorial for actuator : https://www.callicoder.com/spring-boot-actuator/
