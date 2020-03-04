@@ -8,15 +8,15 @@ public class MedicalRecord {
 	private String birthdate;
 	private List<String> medications;
 	private List<String> allergies;
-	public MedicalRecord(String firstName, String lastName, String birthdate, List<String> medications,
-			List<String> allergies) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.birthdate = birthdate;
-		this.medications = medications;
-		this.allergies = allergies;
-	}
+//	public MedicalRecord(String firstName, String lastName, String birthdate, List<String> medications,
+//			List<String> allergies) {
+//		super();
+//		this.firstName = firstName;
+//		this.lastName = lastName;
+//		this.birthdate = birthdate;
+//		this.medications = medications;
+//		this.allergies = allergies;
+//	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -46,6 +46,11 @@ public class MedicalRecord {
 	}
 	public void setAllergies(List<String> allergies) {
 		this.allergies = allergies;
+	}
+	@Override
+	public String toString() {
+		return "MedicalRecord [firstName=" + firstName + ", lastName=" + lastName + ", birthdate=" + birthdate
+				+ ", medications=" + medications + ", allergies=" + allergies + "]";
 	}
 	
 }
