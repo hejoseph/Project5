@@ -1,4 +1,4 @@
-package com.example.restservice;
+package com.safetyalert;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
