@@ -20,6 +20,7 @@ import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.SafetyAlertJsonData;
+import com.safetyalert.service.PersonService;
 
 @Configuration
 public class LoadSafetyAlertData {
@@ -57,8 +58,11 @@ public class LoadSafetyAlertData {
 				String keyRecord = record.getFirstName()+record.getLastName();
 				if(keyPerson.equals(keyRecord)) {
 					person.setMedicalRecord(record);
+					person.setAge(PersonService.calculteAge(record.getBirthdate()));
 				}
 			}
+			
+			
 		}
 	}
 	

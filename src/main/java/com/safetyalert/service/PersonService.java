@@ -3,6 +3,7 @@ package com.safetyalert.service;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class PersonService {
 	 *            in format like 12/31/1994
 	 * @return
 	 */
-	private static int calculteAge(String birthDate) {
+	public static int calculteAge(String birthDate) {
 		LocalDate today = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate localDate = LocalDate.parse(birthDate, formatter);
@@ -56,7 +57,7 @@ public class PersonService {
 		int nbChildren = 0;
 
 		for (Person person : persons) {
-			if (calculteAge(person.getMedicalRecord().getBirthdate()) >= 18) {
+			if (person.getAge() > 18) {
 				nbAdult++;
 			} else {
 				nbChildren++;
@@ -76,5 +77,26 @@ public class PersonService {
 
 		return result;
 	}
+	
+	public Map<String, List<Person>> getChildrenByAddressAndRelatives(String address) {
+		List<Person> persons = personDAO.getPersonsByAddress(address);
+		List<Person> children = new ArrayList<Person>();
+		List<Person> adults = new ArrayList<Person>();
+		
+		for(Person person : persons) {
+			if(person.getAge() > 18) {
+				adults.add(person);
+			}else {
+				children.add(person);
+			}
+		}
+		
+		Map<String, List<Person>> map = new HashMap<>();
+		map.put("children", children);
+		map.put("adults", adults);
+		
+		return map;
+	}
+	
 
 }
