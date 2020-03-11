@@ -14,16 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
-import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
-import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.PersonService;
 
@@ -97,5 +91,19 @@ public class SafetyAlertController {
 		
 		return result;
 	}
+	
+	@GetMapping("/phoneAlert")
+	public String getPhonesByStation(@RequestParam String firestation, @RequestParam(required = false) boolean showAll) {
+		String result = "";
+		Map map = personService.getPhonesByStation(firestation);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
+		return result;
+	}
+	
 	
 }
