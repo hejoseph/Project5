@@ -12,6 +12,7 @@ public class Person {
 	private String zip;
 	private String phone;
 	private String email;
+	private int age;
 	private FireStation fireStation;
 	private MedicalRecord medicalRecord;
 	
@@ -69,11 +70,16 @@ public class Person {
 	public void setMedicalRecord(MedicalRecord medicalRecord) {
 		this.medicalRecord = medicalRecord;
 	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
 	@Override
 	public String toString() {
 		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
-				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", fireStation=" + fireStation
-				+ ", medicalRecord=" + medicalRecord + "]";
+				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", age=" + age + ", fireStation="
+				+ fireStation + ", medicalRecord=" + medicalRecord + "]";
 	}
-	
 }

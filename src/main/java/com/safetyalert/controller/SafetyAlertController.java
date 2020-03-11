@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.safetyalert.jsonfilter.ChildAlertFilter;
 import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.MedicalRecord;
@@ -70,8 +71,31 @@ public class SafetyAlertController {
 		} catch (IOException e) {
 			logger.error("error",e);
 		}
+		return result;
+	}
+	
+	@GetMapping("/childAlert")
+	public String getChildrenByAddress(@RequestParam String address, @RequestParam(required = false) boolean showAll) {
+		String result = "";
 		
+		Map map = personService.getChildrenByAddressAndRelatives(address);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		if(showAll) {
+			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
+		}else {
+			filterProvider.addFilter("PersonFilter", new ChildAlertFilter());
+		}
+		mapper.setFilterProvider(filterProvider);
+		
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
 		
 		return result;
 	}
+	
 }

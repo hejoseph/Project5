@@ -10,4 +10,5 @@ import com.safetyalert.model.Person;
 public interface IPersonDAO {
 	public List<Person> getPersons();
 	public List<Person> getPersonsCoveredByStation(String number);
+	public List<Person> getPersonsByAddress(String address);
 }

@@ -34,5 +34,18 @@ public class PersonDAO implements IPersonDAO{
 		}
 		return result;
 	}
+
+	@Override
+	public List<Person> getPersonsByAddress(String address) {
+		List<Person> result = new ArrayList<Person>();
+		for(Person person : this.persons) {
+			if(person.getAddress().equals(address)) {
+				result.add(person);
+			}
+		}
+		return result;
+	}
+	
+	
 	
 }
