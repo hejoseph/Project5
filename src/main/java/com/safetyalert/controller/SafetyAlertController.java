@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
 import com.safetyalert.jsonfilter.FirePersonFilter;
 import com.safetyalert.jsonfilter.FireStationFilter;
+import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
 import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.Person;
@@ -136,4 +137,34 @@ public class SafetyAlertController {
 		
 		return result;
 	}
+	
+	@GetMapping("/flood/stations")
+	public String getPersonsByStationsGroupByAddress(@RequestParam String[] stations) {
+		List<Person> persons = personService.getPersonsFromStations(stations);
+		
+		logger.info(stations.length);
+		logger.info(persons.size());
+		List<String> addresses = personService.getUniqueAddressFromPersons(persons);
+		Map<String, Object> map = new HashMap<>();
+		for(String address : addresses) {
+			List<Person> temp = personService.retrievePersonFromAddress(persons, address);
+			map.put(address, temp);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter("PersonFilter", new FloodStationsPersonFilter());
+		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
+		mapper.setFilterProvider(filterProvider);
+		
+		String result = "";
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
+		
+		return result;
+	}
+
 }
