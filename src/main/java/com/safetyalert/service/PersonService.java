@@ -98,5 +98,19 @@ public class PersonService {
 		return map;
 	}
 	
+	public Map<String, List<String>> getPhonesByStation(String stationNumber){
+		List<Person> persons = personDAO.getPersonsCoveredByStation(stationNumber);
+		List<String> phones = new ArrayList<String>();
+		for(Person person : persons) {
+			String phone = person.getPhone();
+			if(!phones.contains(phone)) {
+				phones.add(phone);
+			}
+		}
+		Map<String, List<String>> map = new HashMap<>();
+		map.put("phones", phones);
+		return map;
+	}
+	
 
 }
