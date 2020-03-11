@@ -17,6 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
+import com.safetyalert.jsonfilter.FirePersonFilter;
+import com.safetyalert.jsonfilter.FireStationFilter;
+import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.PersonService;
@@ -105,5 +108,32 @@ public class SafetyAlertController {
 		return result;
 	}
 	
-	
+	@GetMapping("/fire")
+	public String getPersonsByAddress(@RequestParam String address, @RequestParam(required = false) boolean showAll) {
+		logger.info("fire/");
+		logger.debug("fire2/");
+		
+		String result = "";
+		List<Person> persons = personService.getPersonsByAddress(address);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		if(showAll) {
+			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
+		}else {
+			filterProvider.addFilter("PersonFilter", new FirePersonFilter());
+			filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
+			filterProvider.addFilter("FireStationFilter", new FireStationFilter());
+		}
+		mapper.setFilterProvider(filterProvider);
+		
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
+		
+		return result;
+	}
 }

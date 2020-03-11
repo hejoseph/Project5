@@ -111,6 +111,10 @@ public class PersonService {
 		map.put("phones", phones);
 		return map;
 	}
+
+	public List<Person> getPersonsByAddress(String address) {
+		return personDAO.getPersonsByAddress(address);
+	}
 	
 
 }
