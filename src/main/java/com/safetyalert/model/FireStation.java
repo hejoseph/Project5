@@ -1,5 +1,8 @@
 package com.safetyalert.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("FireStationFilter")
 public class FireStation {
 	private String address;
 	private String station;

@@ -9,9 +9,9 @@ import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 
-public class StationNumberPersonFilter extends SimpleBeanPropertyFilter {
+public class FirePersonFilter extends SimpleBeanPropertyFilter {
 	
-	private static final String[] properties = new String[] {"firstName","lastName","address","phone"};
+	private static final String[] properties = new String[] {"lastName","phone","age","fireStation","medicalRecord"};
 	private static List<String> includeProperties = Arrays.asList(properties);
 	
 	@Override
@@ -22,6 +22,10 @@ public class StationNumberPersonFilter extends SimpleBeanPropertyFilter {
 				writer.serializeAsField(pojo, jgen, provider);
 				return;
 			}
+//			int intValue = ((MyDtoWithFilter) pojo).getIntValue();
+//			if (intValue >= 0) {
+//				writer.serializeAsField(pojo, jgen, provider);
+//			}
 		} else if (!jgen.canOmitFields()) { // since 2.3
 			writer.serializeAsOmittedField(pojo, jgen, provider);
 		}

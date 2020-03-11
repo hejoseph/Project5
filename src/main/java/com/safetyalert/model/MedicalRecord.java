@@ -2,6 +2,9 @@ package com.safetyalert.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+
+@JsonFilter("MedicalRecordFilter")
 public class MedicalRecord {
 	private String firstName;
 	private String lastName;

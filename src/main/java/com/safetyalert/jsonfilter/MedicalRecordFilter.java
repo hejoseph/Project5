@@ -3,21 +3,27 @@ package com.safetyalert.jsonfilter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.BeanPropertyWriter;
 import com.fasterxml.jackson.databind.ser.PropertyWriter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 
-public class StationNumberPersonFilter extends SimpleBeanPropertyFilter {
+public class MedicalRecordFilter extends SimpleBeanPropertyFilter {
 	
-	private static final String[] properties = new String[] {"firstName","lastName","address","phone"};
+	private static final Logger logger = LogManager.getLogger("MedicalRecordFilter");
+	
+	private static final String[] properties = new String[] {"medications","allergies"};
 	private static List<String> includeProperties = Arrays.asList(properties);
 	
 	@Override
 	public void serializeAsField(Object pojo, JsonGenerator jgen, SerializerProvider provider, PropertyWriter writer)
 			throws Exception {
 		if (include(writer)) {
+			
 			if (includeProperties.contains(writer.getName())) {
 				writer.serializeAsField(pojo, jgen, provider);
 				return;
