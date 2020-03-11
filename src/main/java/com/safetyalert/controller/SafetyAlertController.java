@@ -1,6 +1,9 @@
 package com.safetyalert.controller;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,11 +38,6 @@ public class SafetyAlertController {
 		this.personService = personService;
 	}
 
-	@GetMapping("/hello")
-	public String greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-		return "ok";
-	}
-	
 	@GetMapping("/firestation")
 	public String getPersonsByStationNumberFilteredProperties(@RequestParam String stationNumber, @RequestParam(required = false) boolean showAll) {
 		List<Person> persons = personService.getPersonsCoveredByStation(stationNumber);
@@ -54,11 +52,25 @@ public class SafetyAlertController {
 		mapper.setFilterProvider(filterProvider);
 		String result = "";
 		
+		Map<String, Object> map = new HashMap<>();
+		
 		try {
-			result += mapper.writer(filterProvider).writeValueAsString(persons);
+			String personDetails = mapper.writer(filterProvider).writeValueAsString(persons);
+			
+			String count = personService.countAdultChildren(persons);
+			
+			Map[] tempPerson = mapper.readValue(personDetails, Map[].class);
+			Map<String,Object> tempCount = mapper.readValue(count, Map.class);
+			
+			map.put("personDetails", tempPerson);
+			map.put("count", tempCount);
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write to json",e);
+		} catch (IOException e) {
+			logger.error("error",e);
 		}
+		
 		
 		return result;
 	}
