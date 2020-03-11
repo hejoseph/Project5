@@ -1,5 +1,6 @@
 package com.safetyalert.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -7,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.safetyalert.model.Person;
 
 @Repository
-public class PersonDAO {
+public class PersonDAO implements IPersonDAO{
 
 	private List<Person> persons;
 	
@@ -21,6 +22,17 @@ public class PersonDAO {
 
 	public void setPersons(List<Person> persons) {
 		this.persons = persons;
+	}
+
+	@Override
+	public List<Person> getPersonsCoveredByStation(String number) {
+		List<Person> result = new ArrayList<Person>();
+		for(Person person : this.persons) {
+			if(person.getFireStation().getStation().equals(number)) {
+				result.add(person);
+			}
+		}
+		return result;
 	}
 	
 }

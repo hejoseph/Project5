@@ -1,5 +1,8 @@
 package com.safetyalert.config;
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,8 +11,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetyalert.dao.PersonDAO;
+import com.safetyalert.model.FireStation;
+import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.SafetyAlertJsonData;
 
@@ -24,20 +32,34 @@ public class LoadSafetyAlertData {
 	@Bean
 	CommandLineRunner initDataFromJson() {
 		return args -> {
-//			logger.info("loading data ...");
-//			List<Person> persons = new ArrayList<Person>();
-//			persons.add(p1);
-//			personDAO.setPersons(persons);
-			logger.info("loading data 2 ...");
-			//create ObjectMapper instance
+			logger.info("loading data ...");
 	        ObjectMapper objectMapper = new ObjectMapper();
 	        //read json file and convert to customer object
 	        SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
-	        //print customer details
-	        System.out.println(jsonData);
+	        associateData(jsonData);
 	        personDAO.setPersons(jsonData.getPersons());
-	        logger.info("end2 ...");
 		};
+	}
+	
+	private void associateData(SafetyAlertJsonData jsonData) {
+		for(Person person : jsonData.getPersons()) {
+			//associate one fireStation to one person
+			for(FireStation fireStation : jsonData.getFirestations()) {
+				if(person.getAddress().equals(fireStation.getAddress())) {
+					person.setFireStation(fireStation);
+					break;
+				}
+			}
+			
+			//associate one medicalRecord to one person
+			for(MedicalRecord record : jsonData.getMedicalrecords()) {
+				String keyPerson = person.getFirstName()+person.getLastName();
+				String keyRecord = record.getFirstName()+record.getLastName();
+				if(keyPerson.equals(keyRecord)) {
+					person.setMedicalRecord(record);
+				}
+			}
+		}
 	}
 	
 }

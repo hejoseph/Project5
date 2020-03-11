@@ -1,5 +1,9 @@
 package com.safetyalert.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@JsonFilter("PersonFilter")
 public class Person {
 	private String firstName;
 	private String lastName;
@@ -8,18 +12,9 @@ public class Person {
 	private String zip;
 	private String phone;
 	private String email;
+	private FireStation fireStation;
+	private MedicalRecord medicalRecord;
 	
-//	public Person(String firstName, String lastName, String address, String city, String zip, String phone,
-//			String email) {
-//		super();
-//		this.firstName = firstName;
-//		this.lastName = lastName;
-//		this.address = address;
-//		this.city = city;
-//		this.zip = zip;
-//		this.phone = phone;
-//		this.email = email;
-//	}
 	public String getFirstName() {
 		return firstName;
 	}
@@ -62,9 +57,23 @@ public class Person {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	public FireStation getFireStation() {
+		return fireStation;
+	}
+	public MedicalRecord getMedicalRecord() {
+		return medicalRecord;
+	}
+	public void setFireStation(FireStation fireStation) {
+		this.fireStation = fireStation;
+	}
+	public void setMedicalRecord(MedicalRecord medicalRecord) {
+		this.medicalRecord = medicalRecord;
+	}
 	@Override
 	public String toString() {
 		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
-				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + "]";
+				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", fireStation=" + fireStation
+				+ ", medicalRecord=" + medicalRecord + "]";
 	}
+	
 }
