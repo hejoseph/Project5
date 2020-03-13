@@ -39,6 +39,22 @@ public class SafetyAlertController {
 		this.personService = personService;
 	}
 
+	@GetMapping("/all")
+	public String all() {
+		String links = ""
+				+ "<li><a href='https://s3-eu-west-1.amazonaws.com/course.oc-static.com/projects/DAJava_P5/URLs.pdf'>Enoncé</a></li>"
+				+ "<li><a href='http://localhost:8080/firestation?stationNumber=1'>FireStation</a></li>"
+				+ "<li><a href='http://localhost:8080/childAlert?address=1509 Culver St'>ChildAlert</a></li>"
+				+ "<li><a href='http://localhost:8080/phoneAlert?firestation=1'>PhoneAlert</a></li>"
+				+ "<li><a href='http://localhost:8080/fire?address=1509 Culver St'>Fire</a></li>"
+				+ "<li><a href='http://localhost:8080/flood/stations?stations=1,2'>FloodStations</a></li>"
+				+ "<li><a href='http://localhost:8080/personInfo?firstName=John&lastName=Boyd'>PersonInfo</a></li>"
+				+ "<li><a href='http://localhost:8080/communityEmail?city=Culver'>CommunityEmail</a></li>"
+				+ "";
+		
+		return links;
+	}
+	
 	@GetMapping("/firestation")
 	public String getPersonsByStationNumberFilteredProperties(@RequestParam String stationNumber, @RequestParam(required = false) boolean showAll) {
 		List<Person> persons = personService.getPersonsCoveredByStation(stationNumber);
