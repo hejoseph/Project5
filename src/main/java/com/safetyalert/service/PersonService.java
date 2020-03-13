@@ -115,6 +115,32 @@ public class PersonService {
 	public List<Person> getPersonsByAddress(String address) {
 		return personDAO.getPersonsByAddress(address);
 	}
+
+	public List<Person> getPersonsFromStations(String[] stations) {
+		return personDAO.getPersonsFromStations(stations);
+	}
 	
+	public List<String> getUniqueAddressFromPersons(List<Person> persons){
+		List<String> result = new ArrayList<String>();
+		for(Person person : persons) {
+			String address = person.getAddress();
+			if(!result.contains(address)) {
+				result.add(address);
+			}
+		}
+		return result;
+	}
+	
+	public List<Person> retrievePersonFromAddress(List<Person> persons, String address){
+		List<Person> result = new ArrayList<Person>();
+		
+		for(int i = persons.size()-1; i>=0;i--) {
+			Person person = persons.get(i);
+			if(person.getAddress().equals(address)) {
+				result.add(persons.remove(i));
+			}
+		}
+		return result;
+	}
 
 }

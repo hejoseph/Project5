@@ -1,8 +1,11 @@
 package com.safetyalert.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.safetyalert.model.Person;
@@ -10,6 +13,7 @@ import com.safetyalert.model.Person;
 @Repository
 public class PersonDAO implements IPersonDAO{
 
+	private static final Logger logger = LogManager.getLogger("PersonDAO");
 	private List<Person> persons;
 	
 	public PersonDAO(List<Person> persons) {
@@ -40,6 +44,18 @@ public class PersonDAO implements IPersonDAO{
 		List<Person> result = new ArrayList<Person>();
 		for(Person person : this.persons) {
 			if(person.getAddress().equals(address)) {
+				result.add(person);
+			}
+		}
+		return result;
+	}
+
+	@Override
+	public List<Person> getPersonsFromStations(String[] stations) {
+		List<Person> result = new ArrayList<Person>();
+		List<String> arrays = Arrays.asList(stations);
+		for(Person person : this.persons) {
+			if(arrays.contains(person.getFireStation().getStation())) {
 				result.add(person);
 			}
 		}
