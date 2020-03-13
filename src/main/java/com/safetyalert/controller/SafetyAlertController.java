@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
+import com.safetyalert.jsonfilter.CommunityEmailFilter;
 import com.safetyalert.jsonfilter.FirePersonFilter;
 import com.safetyalert.jsonfilter.FireStationFilter;
 import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
@@ -187,6 +188,25 @@ public class SafetyAlertController {
 		
 		return result;
 	
+	}
+	
+	@GetMapping("/communityEmail")
+	public String getPersonsByStationsGroupByAddress(@RequestParam String city) {
+		List<Person> persons = personService.getPersonsByCity(city);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter("PersonFilter", new CommunityEmailFilter());
+		mapper.setFilterProvider(filterProvider);
+		
+		String result = "";
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
+		
+		return result;
 	}
 
 }

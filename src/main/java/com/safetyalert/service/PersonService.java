@@ -147,4 +147,8 @@ public class PersonService {
 		return personDAO.getPersonsByLastName(lastName);
 	}
 
+	public List<Person> getPersonsByCity(String city) {
+		return personDAO.getPersonsByCity(city);
+	}
+
 }
