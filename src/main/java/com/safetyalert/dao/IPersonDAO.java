@@ -13,4 +13,5 @@ public interface IPersonDAO {
 	public List<Person> getPersonsByAddress(String address);
 	public List<Person> getPersonsFromStations(String[] stations);
 	public List<Person> getPersonsByLastName(String lastName);
+	public List<Person> getPersonsByCity(String city);
 }
