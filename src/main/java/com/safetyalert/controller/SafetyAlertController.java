@@ -21,6 +21,7 @@ import com.safetyalert.jsonfilter.FirePersonFilter;
 import com.safetyalert.jsonfilter.FireStationFilter;
 import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
 import com.safetyalert.jsonfilter.MedicalRecordFilter;
+import com.safetyalert.jsonfilter.PersonInfoFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.PersonService;
@@ -165,6 +166,27 @@ public class SafetyAlertController {
 		}
 		
 		return result;
+	}
+	
+	@GetMapping("/personInfo")
+	public String getPersonsByStationsGroupByAddress(@RequestParam String firstName, @RequestParam String lastName) {
+		List<Person> persons = personService.getPersonsByLastName(lastName);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
+		filterProvider.addFilter("PersonFilter", new PersonInfoFilter());
+		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
+		mapper.setFilterProvider(filterProvider);
+		
+		String result = "";
+		try {
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+		} catch (JsonProcessingException e) {
+			logger.error("cannot write json to string",e);
+		}
+		
+		return result;
+	
 	}
 
 }

@@ -61,6 +61,17 @@ public class PersonDAO implements IPersonDAO{
 		}
 		return result;
 	}
+
+	@Override
+	public List<Person> getPersonsByLastName(String lastName) {
+		List<Person> result = new ArrayList<Person>();
+		for(Person person : this.persons) {
+			if(person.getLastName().equals(lastName)) {
+				result.add(person);
+			}
+		}
+		return result;
+	}
 	
 	
 	
