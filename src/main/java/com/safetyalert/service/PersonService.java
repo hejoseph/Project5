@@ -143,4 +143,8 @@ public class PersonService {
 		return result;
 	}
 
+	public List<Person> getPersonsByLastName(String lastName) {
+		return personDAO.getPersonsByLastName(lastName);
+	}
+
 }
