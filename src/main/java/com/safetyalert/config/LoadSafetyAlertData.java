@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonDAO;
+import com.safetyalert.dao.StationRepository;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
@@ -32,7 +33,7 @@ public class LoadSafetyAlertData {
 	private PersonDAO personDAO;
 	
 	@Bean
-	CommandLineRunner initDataBaseFromJson(MedicalRepository medicalRepository) {
+	CommandLineRunner initMedicalData(MedicalRepository medicalRepository) {
 		return args -> {
 			logger.info("loading data to db...");
 			ObjectMapper objectMapper = new ObjectMapper();
@@ -41,6 +42,18 @@ public class LoadSafetyAlertData {
 				medicalRepository.save(record);
 			});
 			logger.info("medical records loaded");
+		};
+	}
+	@Bean
+	CommandLineRunner initStationData(StationRepository stationRepository) {
+		return args -> {
+			logger.info("loading data to db...");
+			ObjectMapper objectMapper = new ObjectMapper();
+			SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
+			jsonData.getFirestations().forEach(station->{
+				stationRepository.save(station);
+			});
+			logger.info("stations loaded");
 		};
 	}
 	
