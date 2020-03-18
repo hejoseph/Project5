@@ -1,9 +1,14 @@
 package com.safetyalert.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 import com.fasterxml.jackson.annotation.JsonFilter;
 
-@JsonFilter("FireStationFilter")
+//@JsonFilter("FireStationFilter")
+@Entity
 public class FireStation {
+	@Id
 	private String address;
 	private String station;
 	public String getAddress() {

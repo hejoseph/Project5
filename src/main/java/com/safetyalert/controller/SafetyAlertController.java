@@ -16,6 +16,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.safetyalert.dao.CustomerRepository;
+import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
 import com.safetyalert.jsonfilter.CommunityEmailFilter;
 import com.safetyalert.jsonfilter.FirePersonFilter;
@@ -24,6 +26,8 @@ import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
 import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.PersonInfoFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
+import com.safetyalert.model.Customer;
+import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.PersonService;
 
@@ -33,10 +37,37 @@ public class SafetyAlertController {
 	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
 	
 	private final PersonService personService;
+	private final CustomerRepository customerRepository;
+	private final MedicalRepository medicalRepository;
 
 	@Autowired
-	public SafetyAlertController(PersonService personService) {
+	public SafetyAlertController(PersonService personService, 
+			CustomerRepository customerRepository, 
+			MedicalRepository medicalRepository) {
 		this.personService = personService;
+		this.customerRepository = customerRepository;
+		this.medicalRepository = medicalRepository;
+	}
+	
+	@GetMapping("/customer")
+	public List<Customer> customer(@RequestParam String lastName) {
+		return customerRepository.findByLastName(lastName);
+	}
+	
+	@GetMapping("/customer2")
+	public Customer customer2(@RequestParam String firstName, @RequestParam String lastName) {
+		return customerRepository.findByFirstNameAndLastName(firstName, lastName);
+	}
+	
+	@GetMapping("/medical")
+	public MedicalRecord medical(@RequestParam String firstName, @RequestParam String lastName) {
+		MedicalRecord record = medicalRepository.findByFirstNameAndLastName(firstName,lastName);
+		
+		if(record.getCustomer()!=null) {
+			logger.debug(record.getCustomer().getLastName());
+		}
+		
+		return record;
 	}
 
 	@GetMapping("/all")
