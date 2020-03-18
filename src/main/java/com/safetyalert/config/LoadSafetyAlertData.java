@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +24,7 @@ import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.SafetyAlertJsonData;
+import com.safetyalert.model.id.PersonId;
 import com.safetyalert.service.PersonService;
 
 @Configuration
@@ -66,6 +68,11 @@ public class LoadSafetyAlertData {
 			SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
 			jsonData.getPersons().forEach(person->{
 				personRepository.save(person);
+				logger.info("person medical = null ? " +(person.getMedicalRecord()==null));
+				Person p1 = personRepository.findByFirstNameAndLastName(person.getFirstName(),person.getLastName());
+				logger.info("p1 medical = null ? " +(p1.getMedicalRecord()==null));
+				p1.setAge(PersonService.calculteAge(p1.getMedicalRecord().getBirthdate()));
+				personRepository.save(p1);
 			});
 			logger.info("persons loaded");
 		};

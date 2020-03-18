@@ -66,6 +66,21 @@ public class SafetyAlertController {
 	public List<Person> person() {
 		return (List<Person>) personRepository.findAll();
 	}
+	
+	@GetMapping("/person2")
+	public List<Person> personByStation(@RequestParam String station) {
+		return (List<Person>) personRepository.findByFireStation_Station(station);
+	}
+	
+	@GetMapping("/person3")
+	public List<Person> personByStations(@RequestParam String[] stations) {
+		return (List<Person>) personRepository.findByFireStation_StationIn(stations);
+	}
+	
+	@GetMapping("/address")
+	public List<String> address(@RequestParam String[] stations) {
+		return personRepository.findDistinctAddressesByStations(stations);
+	}
 
 	@GetMapping("/all")
 	public String all() {
@@ -190,10 +205,12 @@ public class SafetyAlertController {
 		
 		logger.info(stations.length);
 		logger.info(persons.size());
-		List<String> addresses = personService.getUniqueAddressFromPersons(persons);
+//		List<String> addresses = personService.getUniqueAddressFromPersons(persons);
+		List<String> addresses = personService.getUniqueAddressesFromStations(stations);
 		Map<String, Object> map = new HashMap<>();
 		for(String address : addresses) {
-			List<Person> temp = personService.retrievePersonFromAddress(persons, address);
+//			List<Person> temp = personService.retrievePersonFromAddress(persons, address);
+			List<Person> temp = personService.getPersonsByAddress(address);
 			map.put(address, temp);
 		}
 		

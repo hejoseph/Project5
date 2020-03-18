@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetyalert.dao.IPersonDAO;
+import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.model.Person;
 
 @Service
@@ -23,19 +24,19 @@ public class PersonService {
 	
 	private static final Logger logger = LogManager.getLogger("PersonService");
 
-	private final IPersonDAO personDAO;
+	private final PersonRepository personRepository;
 
 	@Autowired
-	public PersonService(IPersonDAO personDAO) {
-		this.personDAO = personDAO;
+	public PersonService(PersonRepository personRepository) {
+		this.personRepository = personRepository; 
 	}
 
 	public List<Person> getAllPeople() {
-		return personDAO.getPersons();
+		return (List<Person>) personRepository.findAll();
 	}
 
 	public List<Person> getPersonsCoveredByStation(String stationNumber) {
-		return personDAO.getPersonsCoveredByStation(stationNumber);
+		return personRepository.findByFireStation_Station(stationNumber);
 	}
 
 	/**
@@ -79,7 +80,7 @@ public class PersonService {
 	}
 	
 	public Map<String, List<Person>> getChildrenByAddressAndRelatives(String address) {
-		List<Person> persons = personDAO.getPersonsByAddress(address);
+		List<Person> persons = personRepository.findByAddress(address);
 		List<Person> children = new ArrayList<Person>();
 		List<Person> adults = new ArrayList<Person>();
 		
@@ -99,7 +100,7 @@ public class PersonService {
 	}
 	
 	public Map<String, List<String>> getPhonesByStation(String stationNumber){
-		List<Person> persons = personDAO.getPersonsCoveredByStation(stationNumber);
+		List<Person> persons = personRepository.findByFireStation_Station(stationNumber);
 		List<String> phones = new ArrayList<String>();
 		for(Person person : persons) {
 			String phone = person.getPhone();
@@ -113,11 +114,11 @@ public class PersonService {
 	}
 
 	public List<Person> getPersonsByAddress(String address) {
-		return personDAO.getPersonsByAddress(address);
+		return personRepository.findByAddress(address);
 	}
 
 	public List<Person> getPersonsFromStations(String[] stations) {
-		return personDAO.getPersonsFromStations(stations);
+		return personRepository.findByFireStation_StationIn(stations);
 	}
 	
 	public List<String> getUniqueAddressFromPersons(List<Person> persons){
@@ -144,11 +145,15 @@ public class PersonService {
 	}
 
 	public List<Person> getPersonsByLastName(String lastName) {
-		return personDAO.getPersonsByLastName(lastName);
+		return personRepository.findByLastName(lastName);
 	}
 
 	public List<Person> getPersonsByCity(String city) {
-		return personDAO.getPersonsByCity(city);
+		return personRepository.findByCity(city);
+	}
+
+	public List<String> getUniqueAddressesFromStations(String[] stations) {
+		return personRepository.findDistinctAddressesByStations(stations);
 	}
 
 }
