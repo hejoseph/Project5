@@ -1,16 +1,37 @@
 package com.safetyalert.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-@JsonFilter("MedicalRecordFilter")
-public class MedicalRecord {
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.safetyalert.model.id.PersonId;
+
+@Entity
+@IdClass(PersonId.class)
+//@JsonFilter("MedicalRecordFilter")
+public class MedicalRecord implements Serializable{
+	@Id
 	private String firstName;
+	@Id
 	private String lastName;
 	private String birthdate;
+	@ElementCollection
 	private List<String> medications;
+	@ElementCollection
 	private List<String> allergies;
+	
+//	@OneToOne(mappedBy = "medicalRecord")
+//	private Customer customer;
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -41,10 +62,11 @@ public class MedicalRecord {
 	public void setAllergies(List<String> allergies) {
 		this.allergies = allergies;
 	}
-	@Override
-	public String toString() {
-		return "MedicalRecord [firstName=" + firstName + ", lastName=" + lastName + ", birthdate=" + birthdate
-				+ ", medications=" + medications + ", allergies=" + allergies + "]";
-	}
 	
+//	public Customer getCustomer() {
+//		return customer;
+//	}
+//	public void setCustomer(Customer customer) {
+//		this.customer = customer;
+//	}
 }

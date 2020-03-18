@@ -38,6 +38,10 @@ public class SafetyAlertController {
 	public SafetyAlertController(PersonService personService) {
 		this.personService = personService;
 	}
+	
+	
+	
+	
 
 	@GetMapping("/all")
 	public String all() {
