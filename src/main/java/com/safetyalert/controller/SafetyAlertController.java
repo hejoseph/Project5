@@ -16,6 +16,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.safetyalert.dao.MedicalRepository;
+import com.safetyalert.dao.PersonRepository;
+import com.safetyalert.dao.StationRepository;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
 import com.safetyalert.jsonfilter.CommunityEmailFilter;
 import com.safetyalert.jsonfilter.FirePersonFilter;
@@ -24,6 +27,8 @@ import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
 import com.safetyalert.jsonfilter.MedicalRecordFilter;
 import com.safetyalert.jsonfilter.PersonInfoFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
+import com.safetyalert.model.FireStation;
+import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.PersonService;
 
@@ -33,15 +38,34 @@ public class SafetyAlertController {
 	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
 	
 	private final PersonService personService;
-
+	private final PersonRepository personRepository;
+	private final MedicalRepository medicalRepository;
+	private final StationRepository stationRepository;
 	@Autowired
-	public SafetyAlertController(PersonService personService) {
+	public SafetyAlertController(PersonService personService,
+			PersonRepository personRepository,
+			MedicalRepository medicalRepository,
+			StationRepository stationRepository) {
 		this.personService = personService;
+		this.personRepository = personRepository;
+		this.medicalRepository = medicalRepository;
+		this.stationRepository = stationRepository;
 	}
 	
+	@GetMapping("/medical")
+	public List<MedicalRecord> medical() {
+		return (List<MedicalRecord>) medicalRepository.findAll();
+	}
 	
+	@GetMapping("/station")
+	public List<FireStation> station() {
+		return (List<FireStation>) stationRepository.findAll();
+	}
 	
-	
+	@GetMapping("/person")
+	public List<Person> person() {
+		return (List<Person>) personRepository.findAll();
+	}
 
 	@GetMapping("/all")
 	public String all() {

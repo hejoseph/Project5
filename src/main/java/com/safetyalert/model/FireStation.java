@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @Entity
-@JsonFilter("FireStationFilter")
+//@JsonFilter("FireStationFilter")
 public class FireStation {
 	@Id
 	private String address;
