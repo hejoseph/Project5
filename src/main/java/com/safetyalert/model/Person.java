@@ -10,12 +10,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.safetyalert.model.id.PersonId;
 
 //@JsonFilter("PersonFilter")
+@Table(name="Person")
 @Entity
 @IdClass(PersonId.class)
 public class Person {
