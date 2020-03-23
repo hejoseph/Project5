@@ -152,11 +152,12 @@ public class LoadSafetyAlertData {
 //				personRepository.save(p1);
 				
 				MedicalRecordCustom medical = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
-				newPerson.setMedicalId(medical.getId());
-				
+//				newPerson.setMedicalId(medical.getId());
+				newPerson.setMedicalRecordCustom(medical);
 				FireStationCustom station = stationRepository.findOneByAddress(newPerson.getAddress());
-				logger.info("found station : "+station);
-				newPerson.setStationId(station.getId());
+//				logger.info("found station : "+station);
+//				newPerson.setStationId(station.getId());
+				newPerson.setFireStationCustom(station);
 				personRepository.save(newPerson);
 			});
 			logger.info("persons loaded");

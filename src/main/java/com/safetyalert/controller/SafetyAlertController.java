@@ -39,7 +39,7 @@ import com.safetyalert.model.id.PersonId;
 import com.safetyalert.service.MedicalService;
 import com.safetyalert.service.PersonService;
 
-@RestController
+//@RestController
 public class SafetyAlertController {
 
 	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
@@ -70,8 +70,8 @@ public class SafetyAlertController {
 		return (List<FireStation>) stationRepository.findAll();
 	}
 
-	@GetMapping("/person")
-	public List<Person> person() {
+	@GetMapping("/person20")
+	public List<Person> person20() {
 		return (List<Person>) personRepository.findAll();
 	}
 
