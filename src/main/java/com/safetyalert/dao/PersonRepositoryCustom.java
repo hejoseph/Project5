@@ -15,10 +15,10 @@ import com.safetyalert.model.id.PersonId;
 public interface PersonRepositoryCustom extends CrudRepository<PersonCustom, Long>{
 	public static final String FIND_DISTINCT_ADDRESS_BY_STATION = "select distinct(p.address) from person p, fire_station fs where p.address like fs.address and fs.station in (:stations)";
 
-	List<PersonCustom> findByFireStation_Station(String station);
+//	List<PersonCustom> findByFireStation_Station(String station);
 	List<PersonCustom> findByAddress(String address);
 	PersonCustom findByFirstNameAndLastName(String firstName, String lastName);
-	List<PersonCustom> findByFireStation_StationIn(String[] stations);
+//	List<PersonCustom> findByFireStation_StationIn(String[] stations);
 	List<PersonCustom> findByLastName(String lastName);
 	List<PersonCustom> findByCity(String city);
 	

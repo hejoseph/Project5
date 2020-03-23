@@ -41,6 +41,13 @@ public class LoadSafetyAlertData {
 	@Autowired
 	private PersonDAO personDAO;
 	
+	@Autowired
+	private MedicalRepositoryCustom medicalRepository;
+	@Autowired
+	private StationRepositoryCustom stationRepository;
+	
+	
+	
 	@Bean
 	CommandLineRunner initMedicalData(MedicalRepository medicalRepository) {
 		return args -> {
@@ -119,9 +126,7 @@ public class LoadSafetyAlertData {
 			SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
 			jsonData.getPersons().forEach(person->{
 				personRepository.save(person);
-				logger.info("person medical = null ? " +(person.getMedicalRecord()==null));
 				Person p1 = personRepository.findByFirstNameAndLastName(person.getFirstName(),person.getLastName());
-				logger.info("p1 medical = null ? " +(p1.getMedicalRecord()==null));
 				p1.setAge(PersonService.calculteAge(p1.getMedicalRecord().getBirthdate()));
 				personRepository.save(p1);
 			});
@@ -129,25 +134,34 @@ public class LoadSafetyAlertData {
 		};
 	}
 	
-//	@Bean
-//	CommandLineRunner initPersonDataCustom(PersonRepositoryCustom personRepository) {
-//		return args -> {
-//			logger.info("loading data to db...");
-//			ObjectMapper objectMapper = new ObjectMapper();
-//			SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
-//			jsonData.getPersons().forEach(person->{
-//				PersonCustom newPerson = new PersonCustom();
-//				newPerson.setFirstName(person.getFirstName());
-//				newPerson.setLastName(person.getLastName());
-//				newPerson.setAddress(person.getAddress());
-//				personRepository.save(newPerson);
-////				PersonCustom p1 = personRepository.findByFirstNameAndLastName(person.getFirstName(),person.getLastName());
-////				p1.setAge(PersonService.calculteAge(p1.getMedicalRecordCustom().getBirthdate()));
-////				personRepository.save(p1);
-//			});
-//			logger.info("persons loaded");
-//		};
-//	}
+	@Bean
+	CommandLineRunner initPersonDataCustom(PersonRepositoryCustom personRepository) {
+		return args -> {
+			logger.info("loading data to db...");
+			ObjectMapper objectMapper = new ObjectMapper();
+			SafetyAlertJsonData jsonData = objectMapper.readValue(new File("data.json"), SafetyAlertJsonData.class);
+			jsonData.getPersons().forEach(person->{
+				PersonCustom newPerson = new PersonCustom();
+				String firstName = person.getFirstName();
+				String lastName = person.getLastName();
+				newPerson.setFirstName(firstName);
+				newPerson.setLastName(lastName);
+				newPerson.setAddress(person.getAddress());
+//				PersonCustom p1 = personRepository.findByFirstNameAndLastName(person.getFirstName(),person.getLastName());
+//				p1.setAge(PersonService.calculteAge(p1.getMedicalRecordCustom().getBirthdate()));
+//				personRepository.save(p1);
+				
+				MedicalRecordCustom medical = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
+				newPerson.setMedicalId(medical.getId());
+				
+				FireStationCustom station = stationRepository.findOneByAddress(newPerson.getAddress());
+				logger.info("found station : "+station);
+				newPerson.setStationId(station.getId());
+				personRepository.save(newPerson);
+			});
+			logger.info("persons loaded");
+		};
+	}
 	
 	@Bean
 	CommandLineRunner initDataFromJson() {

@@ -35,15 +35,18 @@ public class PersonCustom {
 	private String phone;
 	private String email;
 	private int age;
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name="address",referencedColumnName="address", insertable=false, updatable=false)
-	private FireStationCustom fireStation;
-	@OneToOne(cascade = CascadeType.ALL)
-	  @JoinColumns({
-		  @JoinColumn(name = "firstName", referencedColumnName = "firstName", insertable=false, updatable=false),
-		  @JoinColumn(name = "lastName", referencedColumnName = "lastName", insertable=false, updatable=false)
-	  })
-	private MedicalRecordCustom medicalRecord;
+//	@OneToOne(cascade = CascadeType.ALL)
+//	@JoinColumn(name="address",referencedColumnName="address", insertable=false, updatable=false)
+//	private FireStationCustom fireStation;
+//	@OneToOne(cascade = CascadeType.ALL)
+//	  @JoinColumns({
+//		  @JoinColumn(name = "firstName", referencedColumnName = "firstName", insertable=false, updatable=false),
+//		  @JoinColumn(name = "lastName", referencedColumnName = "lastName", insertable=false, updatable=false)
+//	  })
+//	private MedicalRecordCustom medicalRecord;
+	
+	private Long stationId;
+	private Long medicalId;
 	
 	public String getFirstName() {
 		return firstName;
@@ -87,28 +90,35 @@ public class PersonCustom {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public FireStationCustom getFireStationCustom() {
-		return fireStation;
-	}
-	public MedicalRecordCustom getMedicalRecordCustom() {
-		return medicalRecord;
-	}
-	public void setFireStationCustom(FireStationCustom fireStation) {
-		this.fireStation = fireStation;
-	}
-	public void setMedicalRecordCustom(MedicalRecordCustom medicalRecord) {
-		this.medicalRecord = medicalRecord;
-	}
+//	public FireStationCustom getFireStationCustom() {
+//		return fireStation;
+//	}
+//	public MedicalRecordCustom getMedicalRecordCustom() {
+//		return medicalRecord;
+//	}
+//	public void setFireStationCustom(FireStationCustom fireStation) {
+//		this.fireStation = fireStation;
+//	}
+//	public void setMedicalRecordCustom(MedicalRecordCustom medicalRecord) {
+//		this.medicalRecord = medicalRecord;
+//	}
+	
 	public int getAge() {
 		return age;
 	}
+	public Long getStationId() {
+		return stationId;
+	}
+	public Long getMedicalId() {
+		return medicalId;
+	}
+	public void setStationId(Long stationId) {
+		this.stationId = stationId;
+	}
+	public void setMedicalId(Long medicalId) {
+		this.medicalId = medicalId;
+	}
 	public void setAge(int age) {
 		this.age = age;
-	}
-	@Override
-	public String toString() {
-		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
-				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", age=" + age + ", fireStation="
-				+ fireStation + ", medicalRecord=" + medicalRecord + "]";
 	}
 }
