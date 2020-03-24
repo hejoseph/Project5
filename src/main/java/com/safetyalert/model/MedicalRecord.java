@@ -3,9 +3,12 @@ package com.safetyalert.model;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.OneToOne;
@@ -16,21 +19,37 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.safetyalert.model.id.PersonId;
 
 @Entity
-@IdClass(PersonId.class)
 //@JsonFilter("MedicalRecordFilter")
-public class MedicalRecord implements Serializable{
+@Table(name="MedicalRecords")
+public class MedicalRecord{
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "Id", nullable = false, unique = true)
+	private Long id;
+	
+	@Column(name = "firstName")
 	private String firstName;
-	@Id
+	@Column(name = "lastName")
 	private String lastName;
+	@Column(name = "birthdate")
 	private String birthdate;
 	@ElementCollection
+	@Column(name = "medications")
 	private List<String> medications;
 	@ElementCollection
+	@Column(name = "allergies")
 	private List<String> allergies;
 	
-//	@OneToOne(mappedBy = "medicalRecord")
-//	private Customer customer;
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "medicalRecord")
+	private Person person;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
 	
 	public String getFirstName() {
 		return firstName;
@@ -62,11 +81,11 @@ public class MedicalRecord implements Serializable{
 	public void setAllergies(List<String> allergies) {
 		this.allergies = allergies;
 	}
+	public Person getPerson() {
+		return person;
+	}
+	public void setPerson(Person person) {
+		this.person = person;
+	}
 	
-//	public Customer getCustomer() {
-//		return customer;
-//	}
-//	public void setCustomer(Customer customer) {
-//		this.customer = customer;
-//	}
 }

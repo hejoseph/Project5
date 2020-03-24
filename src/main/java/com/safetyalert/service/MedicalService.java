@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.safetyalert.dao.MedicalRepository;
-import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.id.PersonId;
@@ -29,21 +28,22 @@ public class MedicalService {
 		String firstName = medicalRecord.getFirstName();
 		String lastName = medicalRecord.getFirstName();
 		PersonId id = new PersonId(firstName, lastName);
-		return medicalRepository.findById(id).map(record->{
-			record.setBirthdate(medicalRecord.getBirthdate());
-			record.setAllergies(medicalRecord.getAllergies());
-			record.setMedications(medicalRecord.getMedications());
-			return medicalRepository.save(record);
-		}).orElseThrow(() ->{
-			logger.info("id="+id+" not found");
-			//todo throw exception
-			return new MedicalRecordNotFoundException("id="+id+" not found");
-		});
+//		return medicalRepository.findById(id).map(record->{
+//			record.setBirthdate(medicalRecord.getBirthdate());
+//			record.setAllergies(medicalRecord.getAllergies());
+//			record.setMedications(medicalRecord.getMedications());
+//			return medicalRepository.save(record);
+//		}).orElseThrow(() ->{
+//			logger.info("id="+id+" not found");
+//			//todo throw exception
+//			return new MedicalRecordNotFoundException("id="+id+" not found");
+//		});
+		return null;
 	}
 
 	public MedicalRecord deleteMedicalRecord(PersonId id) {
 		MedicalRecord record = medicalRepository.findByFirstNameAndLastName(id.getFirstName(), id.getLastName());
-		medicalRepository.deleteById(id);
+//		medicalRepository.deleteById(id);
 		return record;
 	}
 	
