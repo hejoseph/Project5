@@ -16,6 +16,7 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.safetyalert.model.id.PersonId;
 
 @Entity
@@ -36,8 +37,9 @@ public class MedicalRecordCustom{
 	@ElementCollection
 	private List<String> allergies;
 	
-//	@OneToOne(mappedBy = "medicalRecord")
-//	private Customer customer;
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "medicalRecord")
+	private PersonCustom personCustom;
 	
 	public MedicalRecordCustom() {
 	}
@@ -83,6 +85,20 @@ public class MedicalRecordCustom{
 	public void setAllergies(List<String> allergies) {
 		this.allergies = allergies;
 	}
+
+	public PersonCustom getPersonCustom() {
+		return personCustom;
+	}
+
+	public void setPersonCustom(PersonCustom personCustom) {
+		this.personCustom = personCustom;
+	}
+
+	@Override
+	public String toString() {
+		return "MedicalRecordCustom [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthdate="
+				+ birthdate + ", medications=" + medications + ", allergies=" + allergies + ", personCustom=" + "]";
+	}
 	
 //	public Customer getCustomer() {
 //		return customer;
@@ -90,4 +106,5 @@ public class MedicalRecordCustom{
 //	public void setCustomer(Customer customer) {
 //		this.customer = customer;
 //	}
+	
 }

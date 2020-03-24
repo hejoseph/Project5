@@ -70,8 +70,8 @@ public class SafetyAlertController {
 		return (List<FireStation>) stationRepository.findAll();
 	}
 
-	@GetMapping("/person20")
-	public List<Person> person20() {
+	@GetMapping("/person")
+	public List<Person> person() {
 		return (List<Person>) personRepository.findAll();
 	}
 

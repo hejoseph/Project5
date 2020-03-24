@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.dao.MedicalRepository;
+import com.safetyalert.dao.MedicalRepositoryCustom;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.PersonRepositoryCustom;
 import com.safetyalert.dao.StationRepository;
@@ -35,6 +36,7 @@ import com.safetyalert.jsonfilter.PersonInfoFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
+import com.safetyalert.model.MedicalRecordCustom;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.PersonCustom;
 import com.safetyalert.model.id.PersonId;
@@ -49,12 +51,12 @@ public class SafetyAlertControllerCustom {
 	private final PersonService personService;
 	private final MedicalService medicalService;
 	private final PersonRepositoryCustom personRepository;
-	private final MedicalRepository medicalRepository;
+	private final MedicalRepositoryCustom medicalRepository;
 	private final StationRepository stationRepository;
 
 	@Autowired
 	public SafetyAlertControllerCustom(PersonService personService, MedicalService medicalService,  
-			PersonRepositoryCustom personRepository, MedicalRepository medicalRepository, StationRepository stationRepository) {
+			PersonRepositoryCustom personRepository, MedicalRepositoryCustom medicalRepository, StationRepository stationRepository) {
 		this.personService = personService;
 		this.medicalService = medicalService;
 		this.personRepository = personRepository;
@@ -62,9 +64,11 @@ public class SafetyAlertControllerCustom {
 		this.stationRepository = stationRepository;
 	}
 
-	@GetMapping("/medical")
-	public List<MedicalRecord> medical() {
-		return (List<MedicalRecord>) medicalRepository.findAll();
+	@GetMapping("/medical10")
+	public List<MedicalRecordCustom> medical10() {
+		List<MedicalRecordCustom> lists = (List<MedicalRecordCustom>) medicalRepository.findAll();
+		logger.info(lists.get(0).getPersonCustom());
+		return lists ;
 	}
 
 	@GetMapping("/station")
@@ -76,7 +80,7 @@ public class SafetyAlertControllerCustom {
 	public List<PersonCustom> person20() {
 		return (List<PersonCustom>) personRepository.findAll();
 	}
-
+	
 //	@GetMapping("/person2")
 //	public List<PersonCustom> personByStation(@RequestParam String station) {
 //		return (List<PersonCustom>) personRepository.findByFireStation_Station(station);
