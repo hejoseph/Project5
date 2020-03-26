@@ -11,6 +11,7 @@ import com.safetyalert.model.Person;
 public interface PersonRepository extends CrudRepository<Person, Long>{
 	public static final String FIND_DISTINCT_ADDRESS_BY_STATION = "select distinct(p.address) from persons p, fire_station fs where p.address like fs.address and fs.station in (:stations)";
 	public static final String FIND_BY_MEDICAL_ID = "select * from persons where persons.medical_id = :medicalId";
+	public static final String FIND_BY_STATION_ID = "select * from persons where persons.station_id = :stationId";
 //	public static final String FIND_UNIQUE_PERSON = "select * from persons p, medical_records m where p.firstName like :firstName and p.lastName like : lastName";
 
 	List<Person> findByFireStation_Station(String station);
@@ -25,4 +26,7 @@ public interface PersonRepository extends CrudRepository<Person, Long>{
 
 	@Query(value = FIND_BY_MEDICAL_ID, nativeQuery = true)
 	Person findByMedicalId(@Param("medicalId") String medicalId);
+	
+	@Query(value = FIND_BY_STATION_ID, nativeQuery = true)
+	List<Person> findByStationId(@Param("stationId") String stationId);
 }

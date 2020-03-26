@@ -67,7 +67,9 @@ public class SafetyAlertController {
 
 	@GetMapping("/station")
 	public List<FireStation> station() {
-		return (List<FireStation>) stationRepository.findAll();
+		List<FireStation> stations = (List<FireStation>) stationRepository.findAll();
+		logger.info(stations.get(0).getPerson());
+		return stations;
 	}
 
 	@GetMapping("/person")
@@ -84,6 +86,11 @@ public class SafetyAlertController {
 	public List<Person> personByStations(@RequestParam String[] stations) {
 		return (List<Person>) personRepository.findByFireStation_StationIn(stations);
 	}
+	
+//	@GetMapping("/person4")
+//	public Person person4(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String birthDate) {
+//		return personRepository.findByFirstNameAndLastNameAndBirthDate(firstName, lastName, birthDate);
+//	}
 
 	@GetMapping("/address")
 	public List<String> address(@RequestParam String[] stations) {
@@ -279,24 +286,6 @@ public class SafetyAlertController {
 		}
 
 		return result;
-	}
-
-	@PostMapping("/medicalRecord")
-	public MedicalRecord createMedicalRecord(@RequestBody MedicalRecord medicalRecord) {
-		return medicalService.createMedicalRecord(medicalRecord);
-	}
-	
-	@PutMapping("/medicalRecord")
-	public MedicalRecord updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
-		return medicalService.updateMedicalRecord(medicalRecord);
-	}
-	
-	@DeleteMapping("/medicalRecord")
-	public String deleteMedicalRecord(@RequestBody PersonId id) throws MedicalRecordNotFoundException {
-		medicalService.deleteMedicalRecord(id);
-		String msg = "person deleted : "+id;
-		logger.info(msg);
-		return msg;
 	}
 
 }

@@ -57,4 +57,8 @@ public class FireStation {
 	public void setPerson(List<Person> person) {
 		this.person = person;
 	}
+	@Override
+	public String toString() {
+		return "FireStation [id=" + id + ", address=" + address + ", station=" + station + "]";
+	}
 }

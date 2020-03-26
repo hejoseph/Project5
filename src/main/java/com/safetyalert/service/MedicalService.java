@@ -29,10 +29,9 @@ public class MedicalService {
 	public MedicalRecord createMedicalRecord(MedicalRecord medicalRecord) throws MedicalRecordAlreadyExists {
 		String firstName = medicalRecord.getFirstName();
 		String lastName = medicalRecord.getLastName();
-		MedicalRecord record = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
-		if (record != null) {
+		if (!canCreateMedical(firstName, lastName)) {
 			throw new MedicalRecordAlreadyExists(
-					"cannot create new medical record, because already exists, for " + medicalRecord);
+					"cannot create new medical record, because medical already exists, for firstName and lastName " + medicalRecord);
 		}
 		
 		Person person = personRepository.findByFirstNameAndLastName(firstName, lastName);
@@ -42,40 +41,84 @@ public class MedicalService {
 		return medicalRepository.save(medicalRecord);
 	}
 
-	// private void detachMedicalToPerson(String firstName, String lastName) {
-	//
-	// }
-
-	private MedicalRecord updateMedicalRecordWithId(MedicalRecord newRecord) throws MedicalRecordNotFoundException {
+	private boolean canCreateMedical(String firstName, String lastName) {
+		MedicalRecord exists = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
+		return exists==null;
+	}
+	
+	private MedicalRecord updateMedicalRecordWithId(MedicalRecord newRecord) throws MedicalRecordNotFoundException, MedicalRecordAlreadyExists {
 		Long id = newRecord.getId();
-		return medicalRepository.findById(id).map(foundRecord -> {
-			foundRecord.setAllergies(newRecord.getAllergies());
-			foundRecord.setMedications(newRecord.getMedications());
-			foundRecord.setBirthdate(newRecord.getBirthdate());
+//		return medicalRepository.findById(id).map(foundRecord -> {
+//			foundRecord.setAllergies(newRecord.getAllergies());
+//			foundRecord.setMedications(newRecord.getMedications());
+//			foundRecord.setBirthdate(newRecord.getBirthdate());
+//
+//			String newId = newRecord.getFirstName() + newRecord.getLastName();
+//			String foundId = foundRecord.getFirstName() + foundRecord.getLastName();
+//
+//			if (newId.equals(foundId)) {
+//				return medicalRepository.save(foundRecord);
+//			} else {
+//				String oldFirstName = foundRecord.getFirstName();
+//				String oldLastName = foundRecord.getLastName();
+//
+//				String newFirstName = newRecord.getFirstName();
+//				String newLastName = newRecord.getLastName();
+//				
+//				if(!canCreateMedical(newFirstName, newLastName)) {
+//					//throw exception
+//				}
+//				
+//				// medical name changed, so detached object medical from person
+//				Person person = personRepository.findByFirstNameAndLastName(oldFirstName, oldLastName);
+//				person.setMedicalRecord(null);
+//				personRepository.save(person);
+//
+//				foundRecord.setFirstName(newRecord.getFirstName());
+//				foundRecord.setLastName(newRecord.getLastName());
+//
+//				return medicalRepository.save(foundRecord);
+//			}
+//		}).orElseThrow(() -> {
+//			logger.info("id=" + id + " not found");
+//			return new MedicalRecordNotFoundException("id=" + id + " not found");
+//		});
+		
+		MedicalRecord foundRecord = medicalRepository.findOneById(id);
+		if(foundRecord==null) {
+			throw new MedicalRecordNotFoundException("id{"+id+"} not found in table MedicalRecord");
+		}
+		
+		foundRecord.setAllergies(newRecord.getAllergies());
+		foundRecord.setMedications(newRecord.getMedications());
+		foundRecord.setBirthdate(newRecord.getBirthdate());
+		String newId = newRecord.getFirstName() + newRecord.getLastName();
+		String foundId = foundRecord.getFirstName() + foundRecord.getLastName();
 
-			String newId = newRecord.getFirstName() + newRecord.getLastName();
-			String foundId = foundRecord.getFirstName() + foundRecord.getLastName();
+		if (newId.equals(foundId)) {
+			return medicalRepository.save(foundRecord);
+		} else {
+			String oldFirstName = foundRecord.getFirstName();
+			String oldLastName = foundRecord.getLastName();
 
-			if (newId.equals(foundId)) {
-				return medicalRepository.save(foundRecord);
-			} else {
-				String oldFirstName = foundRecord.getFirstName();
-				String oldLastName = foundRecord.getLastName();
-
-				// medical name changed, so detached object medical from person
-				Person person = personRepository.findByFirstNameAndLastName(oldFirstName, oldLastName);
-				person.setMedicalRecord(null);
-				personRepository.save(person);
-
-				foundRecord.setFirstName(newRecord.getFirstName());
-				foundRecord.setLastName(newRecord.getLastName());
-
-				return medicalRepository.save(foundRecord);
+			String newFirstName = newRecord.getFirstName();
+			String newLastName = newRecord.getLastName();
+			
+			if(!canCreateMedical(newFirstName, newLastName)) {
+				throw new MedicalRecordAlreadyExists("cannot update medical table with firstName="+newFirstName+" ; lastName="+newLastName+ " because already exists");
 			}
-		}).orElseThrow(() -> {
-			logger.info("id=" + id + " not found");
-			return new MedicalRecordNotFoundException("id=" + id + " not found");
-		});
+			
+			// medical name changed, so detached object medical from person
+			Person person = personRepository.findByFirstNameAndLastName(oldFirstName, oldLastName);
+			person.setMedicalRecord(null);
+			personRepository.save(person);
+
+			foundRecord.setFirstName(newRecord.getFirstName());
+			foundRecord.setLastName(newRecord.getLastName());
+
+			return medicalRepository.save(foundRecord);
+		}
+		
 	}
 
 	private MedicalRecord updateMedicalRecordWithFirstAndLastName(MedicalRecord newRecord) {
@@ -97,7 +140,7 @@ public class MedicalService {
 		}
 	}
 
-	public MedicalRecord updateMedicalRecord(MedicalRecord newRecord) throws MedicalRecordNotFoundException {
+	public MedicalRecord updateMedicalRecord(MedicalRecord newRecord) throws MedicalRecordNotFoundException, MedicalRecordAlreadyExists {
 		Long id = newRecord.getId();
 		if (id != null) {
 			return updateMedicalRecordWithId(newRecord);
@@ -111,17 +154,22 @@ public class MedicalService {
 	public MedicalRecord deleteMedicalRecord(MedicalRecord record) throws MedicalRecordNotFoundException {
 		Long id = record.getId();
 		if (id != null) {
-			Person person = personRepository.findByMedicalId(id.toString());
-			person.setMedicalRecord(null);
-			personRepository.save(person);
+			dettachMedicalFromPerson(id);
 			medicalRepository.deleteById(id);
 		} else {
 			checkFirstNameAndLastName(record);
 			MedicalRecord foundRecord = medicalRepository.findByFirstNameAndLastName(record.getFirstName(),
 					record.getLastName());
+			dettachMedicalFromPerson(foundRecord.getId());
 			medicalRepository.delete(foundRecord);
 		}
 		return record;
+	}
+	
+	private void dettachMedicalFromPerson(Long medicalId) {
+		Person person = personRepository.findByMedicalId(medicalId.toString());
+		person.setMedicalRecord(null);
+		personRepository.save(person);
 	}
 
 }

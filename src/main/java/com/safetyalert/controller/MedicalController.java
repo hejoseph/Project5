@@ -59,7 +59,7 @@ public class MedicalController {
 	}
 	
 	@PutMapping("/medicalRecord")
-	public MedicalRecord updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
+	public MedicalRecord updateMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException, MedicalRecordAlreadyExists {
 		return medicalService.updateMedicalRecord(medicalRecord);
 	}
 	
