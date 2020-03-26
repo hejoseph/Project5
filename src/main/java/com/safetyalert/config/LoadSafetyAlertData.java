@@ -52,6 +52,7 @@ public class LoadSafetyAlertData {
 			logger.info("medical records loaded");
 		};
 	}
+	
 	@Bean
 	CommandLineRunner initStationData(StationRepository stationRepository) {
 		return args -> {
@@ -85,15 +86,15 @@ public class LoadSafetyAlertData {
 				person.setAddress(address);
 				MedicalRecord medical = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
 				person.setMedicalRecord(medical);
+				if(medical!=null) {
+					person.setAge(PersonService.calculteAge(medical.getBirthdate()));
+				}
 				FireStation station = stationRepository.findOneByAddress(address);
 				person.setFireStation(station);
-				
 				person.setCity(city);
 				person.setEmail(email);
 				person.setPhone(phone);
 				person.setZip(zip);
-				person.setAge(PersonService.calculteAge(medical.getBirthdate()));
-				
 				personRepository.save(person);
 			});
 			logger.info("persons loaded");

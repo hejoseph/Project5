@@ -87,5 +87,10 @@ public class MedicalRecord{
 	public void setPerson(Person person) {
 		this.person = person;
 	}
+	@Override
+	public String toString() {
+		return "MedicalRecord [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthdate="
+				+ birthdate + ", medications=" + medications + ", allergies=" + allergies + "]";
+	}
 	
 }
