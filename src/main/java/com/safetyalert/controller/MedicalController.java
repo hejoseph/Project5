@@ -65,9 +65,9 @@ public class MedicalController {
 	
 	@DeleteMapping("/medicalRecord")
 	public String deleteMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
-		medicalService.deleteMedicalRecord(medicalRecord);
-		String msg = "person deleted : "+medicalRecord;
-		logger.info(msg);
+		MedicalRecord deleted = medicalService.deleteMedicalRecord(medicalRecord);
+		String msg = "medical deleted : ";
+//		logger.info(deleted);
 		return msg;
 	}
 

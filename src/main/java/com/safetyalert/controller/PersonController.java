@@ -25,6 +25,7 @@ import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
 import com.safetyalert.exception.MedicalRecordAlreadyExists;
 import com.safetyalert.exception.MedicalRecordNotFoundException;
+import com.safetyalert.exception.PersonAlreadyExists;
 import com.safetyalert.exception.StationAlreadyExists;
 import com.safetyalert.exception.StationNotFoundException;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
@@ -44,28 +45,28 @@ import com.safetyalert.service.PersonService;
 import com.safetyalert.service.StationService;
 
 @RestController
-public class StationController {
+public class PersonController {
 
-	private static final Logger logger = LogManager.getLogger("StationController");
+	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
 
 	@Autowired
-	private StationService stationService;
+	private PersonService personService;
 
 
-	@PostMapping("/firestation")
-	public FireStation createStation(@RequestBody FireStation station) throws StationAlreadyExists{
-		return stationService.createStation(station);
+	@PostMapping("/person")
+	public Person createStation(@RequestBody Person person) throws PersonAlreadyExists{
+		return personService.createPerson(person);
 	}
 	
-	@PutMapping("/firestation")
-	public FireStation updateStation(@RequestBody FireStation station) throws StationNotFoundException, StationAlreadyExists{
-		return stationService.updateStation(station);
+	@PutMapping("/person")
+	public Person updateStation(@RequestBody Person person){
+		return personService.updatePerson(person);
 	}
 	
-	@DeleteMapping("/firestation")
-	public String deleteStation(@RequestBody FireStation station) throws StationNotFoundException{
-		FireStation deleted = stationService.deleteStation(station);
-		String msg = "station deleted : "+deleted;
+	@DeleteMapping("/person")
+	public String deleteStation(@RequestBody Person person){
+		Person deleted = personService.deletePerson(person);
+		String msg = "person deleted : "+deleted;
 		logger.info(msg);
 		return msg;
 	}

@@ -31,12 +31,17 @@ public class StationService {
 
 	public FireStation createStation(FireStation station) throws StationAlreadyExists {
 		String address = station.getAddress();
-		FireStation foundStation = stationRepository.findOneByAddress(address);
-		if (foundStation != null) {
+		if (isAddressCovered(address)) {
 			throw new StationAlreadyExists("cannot create new station, because address:" + address
 					+ " is already covered by station:" + station.getStation());
 		}
 		return stationRepository.save(station);
+	}
+	
+	
+	private boolean isAddressCovered(String address) {
+		FireStation foundStation = stationRepository.findOneByAddress(address);
+		return foundStation!=null;
 	}
 
 	public FireStation updateStation(FireStation station) throws StationNotFoundException, StationAlreadyExists {
@@ -65,31 +70,6 @@ public class StationService {
 
 	private FireStation updateStationWithId(FireStation newStation) throws StationNotFoundException, StationAlreadyExists{
 		Long id = newStation.getId();
-//		return stationRepository.findById(id).map(foundStation->{
-//
-//			String oldAddress = foundStation.getAddress();
-//			String newAddress = newStation.getAddress();
-//			foundStation.setStation(newStation.getStation());
-//			
-//			if(newAddress.equals(oldAddress)){
-//				return stationRepository.save(foundStation);
-//			}				
-//				
-//			FireStation addressExists = stationRepository.findOneByAddress(newAddress);
-//			if(addressExists!=null) { //PROBLEM...
-//				throw new StationAlreadyExists("cannot update new station, because address:" + newAddress
-//					+ " is already covered by station:" + addressExists.getStation());
-//			}
-//			
-//			Person person = personRepository.findByStationId(id.toString());
-//			person.setFireStation(null);
-//			personRepository.save(person);
-//			
-//			foundStation.setAddress(newAddress);
-//			return stationRepository.save(foundStation);
-//			
-//		}).orElseThrow(() -> new StationNotFoundException("station id not found : "+id));
-		
 		FireStation foundStation = stationRepository.findOneById(id);
 		if(foundStation==null) {
 			throw new StationNotFoundException("id not found in table station : "+id);
@@ -107,7 +87,7 @@ public class StationService {
 				+ " already covered by a station");
 		}
 		
-		dettachStationFromPersons(id);
+		dettachStationFromPersons(foundStation);
 		
 		foundStation.setAddress(newAddress);
 		return stationRepository.save(foundStation);
@@ -133,20 +113,16 @@ public class StationService {
 			throw new StationNotFoundException("cannot delete, no station found "+station);
 		}
 		
-		Long foundId = foundStation.getId();
-		
-		dettachStationFromPersons(foundId);
-		
+		dettachStationFromPersons(foundStation);
 		
 		stationRepository.delete(foundStation);
 		return foundStation;
 	}
 	
-	private void dettachStationFromPersons(Long stationId) {
-		List<Person> persons = personRepository.findByStationId(stationId.toString());
+	private void dettachStationFromPersons(FireStation foundStation) {
+		List<Person> persons = foundStation.getPerson();
 		for(Person person : persons) {
 			person.setFireStation(null);
-			personRepository.save(person);
 		}
 	}
 
