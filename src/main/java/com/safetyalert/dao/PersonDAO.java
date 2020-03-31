@@ -32,9 +32,9 @@ public class PersonDAO implements IPersonDAO{
 	public List<Person> getPersonsCoveredByStation(String number) {
 		List<Person> result = new ArrayList<Person>();
 		for(Person person : this.persons) {
-			if(person.getFireStation().getStation().equals(number)) {
-				result.add(person);
-			}
+//			if(person.getFireStation().getStation().equals(number)) {
+//				result.add(person);
+//			}
 		}
 		return result;
 	}
@@ -55,9 +55,9 @@ public class PersonDAO implements IPersonDAO{
 		List<Person> result = new ArrayList<Person>();
 		List<String> arrays = Arrays.asList(stations);
 		for(Person person : this.persons) {
-			if(arrays.contains(person.getFireStation().getStation())) {
-				result.add(person);
-			}
+//			if(arrays.contains(person.getFireStation().getStation())) {
+//				result.add(person);
+//			}
 		}
 		return result;
 	}

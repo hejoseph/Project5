@@ -1,16 +1,56 @@
 package com.safetyalert.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
-@JsonFilter("MedicalRecordFilter")
-public class MedicalRecord {
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.safetyalert.model.id.PersonId;
+
+@Entity
+//@JsonFilter("MedicalRecordFilter")
+@Table(name="MedicalRecords")
+public class MedicalRecord{
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "Id", nullable = false, unique = true)
+	private Long id;
+	
+	@Column(name = "firstName")
 	private String firstName;
+	@Column(name = "lastName")
 	private String lastName;
+	@Column(name = "birthdate")
 	private String birthdate;
+	@ElementCollection
+	@Column(name = "medications")
 	private List<String> medications;
+	@ElementCollection
+	@Column(name = "allergies")
 	private List<String> allergies;
+	
+	@JsonIgnore
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "medicalRecord")
+	private Person person;
+	
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	
 	public String getFirstName() {
 		return firstName;
 	}
@@ -41,10 +81,16 @@ public class MedicalRecord {
 	public void setAllergies(List<String> allergies) {
 		this.allergies = allergies;
 	}
+	public Person getPerson() {
+		return person;
+	}
+	public void setPerson(Person person) {
+		this.person = person;
+	}
 	@Override
 	public String toString() {
-		return "MedicalRecord [firstName=" + firstName + ", lastName=" + lastName + ", birthdate=" + birthdate
-				+ ", medications=" + medications + ", allergies=" + allergies + "]";
+		return "MedicalRecord [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", birthdate="
+				+ birthdate + ", medications=" + medications + ", allergies=" + allergies + "]";
 	}
 	
 }
