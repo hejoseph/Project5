@@ -51,6 +51,10 @@ public class StationController {
 	@Autowired
 	private StationService stationService;
 
+	@GetMapping("/station")
+	public FireStation getStationById(@RequestParam Long id) {
+		return stationService.getStationById(id);
+	}
 
 	@PostMapping("/firestation")
 	public FireStation createStation(@RequestBody FireStation station) throws StationAlreadyExists{

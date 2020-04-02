@@ -33,7 +33,7 @@ public class StationService {
 		String address = station.getAddress();
 		if (isAddressCovered(address)) {
 			throw new StationAlreadyExists("cannot create new station, because address:" + address
-					+ " is already covered by station:" + station.getStation());
+					+ " is already covered by a station");
 		}
 		return stationRepository.save(station);
 	}
@@ -124,6 +124,11 @@ public class StationService {
 		for(Person person : persons) {
 			person.setFireStation(null);
 		}
+	}
+
+
+	public FireStation getStationById(Long id) {
+		return stationRepository.findOneById(id);
 	}
 
 }

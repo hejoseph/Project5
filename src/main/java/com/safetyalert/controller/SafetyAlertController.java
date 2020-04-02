@@ -60,41 +60,21 @@ public class SafetyAlertController {
 		this.stationRepository = stationRepository;
 	}
 
-	@GetMapping("/medical")
+	@GetMapping("/medicalAll")
 	public List<MedicalRecord> medical() {
 		return (List<MedicalRecord>) medicalRepository.findAll();
 	}
 
-	@GetMapping("/station")
+	@GetMapping("/stationAll")
 	public List<FireStation> station() {
 		List<FireStation> stations = (List<FireStation>) stationRepository.findAll();
 		logger.info(stations.get(0).getPerson());
 		return stations;
 	}
 
-	@GetMapping("/person")
+	@GetMapping("/personAll")
 	public List<Person> person() {
 		return (List<Person>) personRepository.findAll();
-	}
-
-	@GetMapping("/person2")
-	public List<Person> personByStation(@RequestParam String station) {
-		return (List<Person>) personRepository.findByFireStation_Station(station);
-	}
-
-	@GetMapping("/person3")
-	public List<Person> personByStations(@RequestParam String[] stations) {
-		return (List<Person>) personRepository.findByFireStation_StationIn(stations);
-	}
-	
-//	@GetMapping("/person4")
-//	public Person person4(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String birthDate) {
-//		return personRepository.findByFirstNameAndLastNameAndBirthDate(firstName, lastName, birthDate);
-//	}
-
-	@GetMapping("/address")
-	public List<String> address(@RequestParam String[] stations) {
-		return personRepository.findDistinctAddressesByStations(stations);
 	}
 
 	@GetMapping("/all")

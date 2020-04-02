@@ -75,7 +75,7 @@ public class PersonService {
 
 		Map<String, String> map = new HashMap<>();
 		map.put("adult", "" + nbAdult);
-		map.put("children", "" + nbChildren);
+		map.put("child", "" + nbChildren);
 
 		ObjectMapper mapper = new ObjectMapper();
 		try {

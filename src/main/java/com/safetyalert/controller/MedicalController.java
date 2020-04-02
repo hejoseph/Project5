@@ -35,10 +35,12 @@ import com.safetyalert.jsonfilter.PersonInfoFilter;
 import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
+import com.safetyalert.model.MedicalRecordDto;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.id.PersonId;
 import com.safetyalert.service.MedicalService;
 import com.safetyalert.service.PersonService;
+import com.safetyalert.util.Util;
 
 @RestController
 public class MedicalController {
@@ -65,9 +67,9 @@ public class MedicalController {
 	
 	@DeleteMapping("/medicalRecord")
 	public String deleteMedicalRecord(@RequestBody MedicalRecord medicalRecord) throws MedicalRecordNotFoundException {
-		MedicalRecord deleted = medicalService.deleteMedicalRecord(medicalRecord);
-		String msg = "medical deleted : ";
-//		logger.info(deleted);
+		MedicalRecordDto deleted = medicalService.deleteMedicalRecord(medicalRecord);
+		String msg = "medical deleted : "+deleted.toStringDeleted();
+//		logger.info(dto);
 		return msg;
 	}
 
