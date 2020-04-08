@@ -16,8 +16,8 @@ import com.safetyalert.model.id.PersonId;
 import com.safetyalert.util.Util;
 
 @Service
-public class MedicalService {
-	private static final Logger logger = LogManager.getLogger("MedicalService");
+public class MedicalServiceImpl implements IMedicalService{
+	private static final Logger logger = LogManager.getLogger("MedicalServiceImpl");
 	@Autowired
 	private MedicalRepository medicalRepository;
 
@@ -162,6 +162,11 @@ public class MedicalService {
 		}
 		return false;
 //		record.getPerson().setMedicalRecord(null);
+	}
+
+	@Override
+	public MedicalRecord getMedicalById(Long id) {
+		return medicalRepository.findOneById(id);
 	}
 
 }

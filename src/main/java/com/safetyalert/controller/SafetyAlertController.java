@@ -8,11 +8,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +19,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
-import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.jsonfilter.ChildAlertFilter;
 import com.safetyalert.jsonfilter.CommunityEmailFilter;
 import com.safetyalert.jsonfilter.FirePersonFilter;
@@ -35,30 +30,21 @@ import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
-import com.safetyalert.service.MedicalService;
-import com.safetyalert.service.PersonService;
+import com.safetyalert.service.IPersonService;
 
 @RestController
 public class SafetyAlertController {
 
 	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
 
-	private final PersonService personService;
-	private final MedicalService medicalService;
-	private final PersonRepository personRepository;
-	private final MedicalRepository medicalRepository;
-	private final StationRepository stationRepository;
-
 	@Autowired
-	public SafetyAlertController(PersonService personService, MedicalService medicalService,  
-			PersonRepository personRepository, MedicalRepository medicalRepository, StationRepository stationRepository) {
-		this.personService = personService;
-		this.medicalService = medicalService;
-		this.personRepository = personRepository;
-		this.medicalRepository = medicalRepository;
-		this.stationRepository = stationRepository;
-	}
+	private IPersonService personService;
+	@Autowired
+	private PersonRepository personRepository;
+	@Autowired
+	private MedicalRepository medicalRepository;
+	@Autowired
+	private StationRepository stationRepository;
 
 	@GetMapping("/medicalAll")
 	public List<MedicalRecord> medical() {

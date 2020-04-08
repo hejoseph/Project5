@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-//@JsonFilter("FireStationFilter")
 @Table(name="FireStations")
 public class FireStation {
 	@Id

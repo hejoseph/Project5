@@ -1,5 +1,8 @@
 package com.safetyalert.util;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +52,19 @@ public class Util {
 	    	logger.error("ERROR", e);
 	    	return null;
 	    }
+	}
+	
+	/**
+	 * 
+	 * @param birthDate
+	 *            in format like 12/31/1994
+	 * @return
+	 */
+	public static int calculteAge(String birthDate) {
+		LocalDate today = LocalDate.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+		LocalDate localDate = LocalDate.parse(birthDate, formatter);
+		return Period.between(localDate, today).getYears();
 	}
 	
 }

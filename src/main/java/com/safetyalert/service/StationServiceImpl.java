@@ -21,8 +21,8 @@ import com.safetyalert.model.Person;
 import com.safetyalert.model.id.PersonId;
 
 @Service
-public class StationService {
-	private static final Logger logger = LogManager.getLogger("MedicalService");
+public class StationServiceImpl implements IStationService{
+	private static final Logger logger = LogManager.getLogger("StationServiceImpl");
 	@Autowired
 	private StationRepository stationRepository;
 

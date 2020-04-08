@@ -3,8 +3,12 @@ package com.safetyalert.controller;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -24,10 +28,10 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.FireStationDto;
-import com.safetyalert.service.StationService;
+import com.safetyalert.service.IStationService;
+import com.safetyalert.service.StationServiceImpl;
 import com.safetyalert.util.Util;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 // @TestPropertySource(
@@ -40,7 +44,7 @@ public class StationControllerTest {
 	private MockMvc mockMvc;
 
 	@Autowired
-	private StationService stationService;
+	private IStationService stationService;
 	
 	private String createStation(String address, String station) throws Exception{
 		System.out.println("creating ...");
@@ -56,7 +60,7 @@ public class StationControllerTest {
 	}
 	
 	private FireStationDto updateStation(FireStationDto station) throws Exception {
-		MvcResult result = this.mockMvc.perform(MockMvcRequestBuilders.put("/firestation")
+		MvcResult result = this.mockMvc.perform(put("/firestation")
 				.content(Util.asJsonString(station))
 				.contentType(MediaType.APPLICATION_JSON)
 				.accept(MediaType.APPLICATION_JSON))
@@ -70,11 +74,11 @@ public class StationControllerTest {
 	
 	@Test
 	public void testCreateStation() throws Exception {
-		String json = createStation("address1", "station1");
+		String json = createStation("address12345", "station1");
 		FireStationDto station = Util.parseJsonString(json, FireStationDto.class);
 		Long id = station.getId();
 		FireStation found = stationService.getStationById(id);
-		assertTrue(found!=null);
+		assertNotNull(found);
 	}
 	
 	@Test
@@ -115,10 +119,27 @@ public class StationControllerTest {
 		
 		Long id = updated.getId();
 		FireStation found = stationService.getStationById(id);
-		assertTrue(found!=null);
+		assertNotNull(found);
 		assertEquals(found.getStation(),updated.getStation());
 		assertEquals(found.getId(),created.getId());
 		assertNotEquals(found.getStation(),created.getStation());
+	}
+	
+	@Test
+	public void testDeleteStationById() throws Exception {
+		String address = "deletemyaddress";
+		String station = "deletemystation";
+		String json = createStation(address, station);
+		FireStationDto created = Util.parseJsonString(json, FireStationDto.class);
+		
+		this.mockMvc.perform(delete("/firestation")
+				.content(Util.asJsonString(new FireStationDto(created.getId(), null, null)))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		FireStation found = stationService.getStationById(created.getId());
+		assertNull(found);
 	}
 
 }

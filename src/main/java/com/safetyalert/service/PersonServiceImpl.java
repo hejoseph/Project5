@@ -25,9 +25,9 @@ import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 
 @Service
-public class PersonService {
+public class PersonServiceImpl implements IPersonService{
 	
-	private static final Logger logger = LogManager.getLogger("PersonService");
+	private static final Logger logger = LogManager.getLogger("PersonServiceImpl");
 
 	@Autowired
 	private PersonRepository personRepository;
@@ -45,19 +45,6 @@ public class PersonService {
 
 	public List<Person> getPersonsCoveredByStation(String stationNumber) {
 		return personRepository.findByFireStation_Station(stationNumber);
-	}
-
-	/**
-	 * 
-	 * @param birthDate
-	 *            in format like 12/31/1994
-	 * @return
-	 */
-	public static int calculteAge(String birthDate) {
-		LocalDate today = LocalDate.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-		LocalDate localDate = LocalDate.parse(birthDate, formatter);
-		return Period.between(localDate, today).getYears();
 	}
 
 	public String countAdultChildren(List<Person> persons) {
@@ -194,9 +181,10 @@ public class PersonService {
 	}
 
 	public Person updatePerson(Person person) {
-		Long id = person.getId();
-		Person updated = updatePersonById(person);
-		if(updated == null) {
+		Person updated = null;
+		if(person.getId()!=null) {
+			updated = updatePersonById(person);
+		}else {
 			updated = updatePersonByFirstAndLastName(person);
 		}
 		return updated;
@@ -218,7 +206,8 @@ public class PersonService {
 		}
 		
 		String firstName = person.getFirstName();
-		String lastName = person.getFirstName();
+		String lastName = person.getLastName();
+		logger.info("can create ?"+canCreate(firstName, lastName));
 		if(!canCreate(firstName, lastName)) {
 			return null;
 		}
@@ -232,7 +221,7 @@ public class PersonService {
 		
 	}
 	
-	public void transpose(Person from, Person to) {
+	private void transpose(Person from, Person to) {
 		String address = from.getAddress();
 		int age = from.getAge();
 		String city = from.getCity();
@@ -292,6 +281,16 @@ public class PersonService {
 		Person found = personRepository.findOneById(id);
 		personRepository.delete(found);
 		return found;
+	}
+
+	@Override
+	public Person getPersonById(Long id) {
+		return personRepository.findOneById(id);
+	}
+
+	@Override
+	public Person getPersonByFirstAndLastName(String firstName, String lastName) {
+		return personRepository.findByFirstNameAndLastName(firstName, lastName);
 	}
 
 }

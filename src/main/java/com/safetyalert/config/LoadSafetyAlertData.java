@@ -1,13 +1,6 @@
 package com.safetyalert.config;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,12 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.googlecode.jmapper.JMapper;
-import com.googlecode.jmapper.api.JMapperAPI;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonDAO;
 import com.safetyalert.dao.PersonRepository;
@@ -31,8 +19,7 @@ import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.MedicalRecordDto;
 import com.safetyalert.model.Person;
 import com.safetyalert.model.SafetyAlertJsonData;
-import com.safetyalert.model.id.PersonId;
-import com.safetyalert.service.PersonService;
+import com.safetyalert.util.Util;
 
 @Configuration
 public class LoadSafetyAlertData {
@@ -157,7 +144,7 @@ public class LoadSafetyAlertData {
 				MedicalRecord medical = medicalRepository.findByFirstNameAndLastName(firstName, lastName);
 				person.setMedicalRecord(medical);
 				if (medical != null) {
-					person.setAge(PersonService.calculteAge(medical.getBirthdate()));
+					person.setAge(Util.calculteAge(medical.getBirthdate()));
 				}
 				FireStation station = stationRepository.findOneByAddress(address);
 				person.setFireStation(station);

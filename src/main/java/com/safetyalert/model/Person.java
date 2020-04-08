@@ -20,7 +20,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.safetyalert.model.id.PersonId;
 
-//@JsonFilter("PersonFilter")
 @Entity
 @Table(name="Persons")
 public class Person {
@@ -123,8 +122,8 @@ public class Person {
 	}
 	@Override
 	public String toString() {
-		return "Person [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address + ", city=" + city
-				+ ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", age=" + age + ", fireStation="
-				+ fireStation + ", medicalRecord=" + medicalRecord + "]";
+		return "Person [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", address=" + address
+				+ ", city=" + city + ", zip=" + zip + ", phone=" + phone + ", email=" + email + ", age=" + age
+				+ ", fireStation=" + fireStation + ", medicalRecord=" + medicalRecord + "]";
 	}
 }
