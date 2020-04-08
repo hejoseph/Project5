@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
 import com.safetyalert.exception.MedicalRecordAlreadyExists;
+import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.exception.PersonAlreadyExists;
 import com.safetyalert.exception.StationAlreadyExists;
 import com.safetyalert.exception.StationNotFoundException;
@@ -24,7 +25,14 @@ public class GlobalExceptionHandler {
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		StationAlreadyExists e = (StationAlreadyExists)ex;
-//		List<String> errors = Collections.singletonList(ex.getMessage());
+		return new ResponseEntity<>(ex.getMessage(), headers, status);
+	}
+	
+	@ExceptionHandler({MedicalRecordNotFoundException.class})
+    public final ResponseEntity<?> handleException2(Exception ex, WebRequest request) {
+		HttpHeaders headers = new HttpHeaders();
+		HttpStatus status = HttpStatus.FOUND;
+		MedicalRecordNotFoundException e = (MedicalRecordNotFoundException)ex;
 		return new ResponseEntity<>(ex.getMessage(), headers, status);
 	}
 	
@@ -33,7 +41,6 @@ public class GlobalExceptionHandler {
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		MedicalRecordAlreadyExists e = (MedicalRecordAlreadyExists)ex;
-//		List<String> errors = Collections.singletonList(ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), headers, status);
 	}
 	
@@ -42,7 +49,6 @@ public class GlobalExceptionHandler {
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		PersonAlreadyExists e = (PersonAlreadyExists)ex;
-//		List<String> errors = Collections.singletonList(ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), headers, status);
 	}
 	

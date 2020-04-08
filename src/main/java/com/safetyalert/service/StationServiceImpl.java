@@ -30,10 +30,24 @@ public class StationServiceImpl implements IStationService{
 			throw new StationAlreadyExists("cannot create new station, because address:" + address
 					+ " is already covered by a station");
 		}
-		return stationRepository.save(station);
+		
+		FireStation saved = stationRepository.save(station);
+		attachStationToPersons(saved);
+		
+		return saved;
 	}
 	
 	
+	private void attachStationToPersons(FireStation station) {
+		String address = station.getAddress();
+		List<Person> persons = personRepository.findByAddress(address);
+		for(Person person : persons) {
+			person.setFireStation(station);
+			personRepository.save(person);
+		}
+	}
+
+
 	private boolean isAddressCovered(String address) {
 		FireStation foundStation = stationRepository.findOneByAddress(address);
 		return foundStation!=null;

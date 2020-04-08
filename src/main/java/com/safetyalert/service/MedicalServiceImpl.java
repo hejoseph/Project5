@@ -62,8 +62,8 @@ public class MedicalServiceImpl implements IMedicalService{
 		foundRecord.setAllergies(newRecord.getAllergies());
 		foundRecord.setMedications(newRecord.getMedications());
 		foundRecord.setBirthdate(newRecord.getBirthdate());
-		String newId = newRecord.getFirstName() + newRecord.getLastName();
-		String foundId = foundRecord.getFirstName() + foundRecord.getLastName();
+		String newId = newRecord.getId()+newRecord.getFirstName() + newRecord.getLastName();
+		String foundId = foundRecord.getId()+foundRecord.getFirstName() + foundRecord.getLastName();
 
 		if (newId.equals(foundId)) {
 			return medicalRepository.save(foundRecord);
