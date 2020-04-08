@@ -10,12 +10,13 @@ import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.exception.MedicalRecordAlreadyExists;
 import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.model.MedicalRecord;
+import com.safetyalert.model.MedicalRecordDto;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
+import com.safetyalert.util.Util;
 
 @Service
-public class MedicalService {
-	private static final Logger logger = LogManager.getLogger("MedicalService");
+public class MedicalServiceImpl implements IMedicalService{
+	private static final Logger logger = LogManager.getLogger("MedicalServiceImpl");
 	@Autowired
 	private MedicalRepository medicalRepository;
 
@@ -61,8 +62,8 @@ public class MedicalService {
 		foundRecord.setAllergies(newRecord.getAllergies());
 		foundRecord.setMedications(newRecord.getMedications());
 		foundRecord.setBirthdate(newRecord.getBirthdate());
-		String newId = newRecord.getFirstName() + newRecord.getLastName();
-		String foundId = foundRecord.getFirstName() + foundRecord.getLastName();
+		String newId = newRecord.getId()+newRecord.getFirstName() + newRecord.getLastName();
+		String foundId = foundRecord.getId()+foundRecord.getFirstName() + foundRecord.getLastName();
 
 		if (newId.equals(foundId)) {
 			return medicalRepository.save(foundRecord);
@@ -120,14 +121,23 @@ public class MedicalService {
 		return updateMedicalRecordWithFirstAndLastName(newRecord);
 	}
 
-	public MedicalRecord deleteMedicalRecord(MedicalRecord record) throws MedicalRecordNotFoundException {
+	public MedicalRecordDto deleteMedicalRecord(MedicalRecord record) throws MedicalRecordNotFoundException {
 		Long id = record.getId();
-		MedicalRecord result = null;
+		MedicalRecordDto result = null;
+		MedicalRecord temp = null;
 		if (id != null) {
-			result = medicalRepository.findOneById(id);
-			if(result!=null) {
-				dettachMedicalFromPerson(result);
-				medicalRepository.delete(result);
+			temp = medicalRepository.findOneById(id);
+			if(temp!=null) {
+				System.out.println("Debug");
+				System.out.println("Debug");
+				System.out.println("Debug");
+				logger.info(temp.getBirthdate());
+				
+				logger.info(temp.getAllergies());
+				
+				dettachMedicalFromPerson(temp);
+				result = Util.copyObject(temp, MedicalRecordDto.class);
+				medicalRepository.delete(temp);
 			}
 		} else {
 			checkFirstNameAndLastName(record);
@@ -135,22 +145,27 @@ public class MedicalService {
 					record.getLastName());
 			if(foundRecord!=null) {
 				dettachMedicalFromPerson(foundRecord);
+				result=Util.copyObject(foundRecord, MedicalRecordDto.class);
 				medicalRepository.delete(foundRecord);
-				result=foundRecord;
 			}
 		}
 		return result;
 	}
 	
-	private void dettachMedicalFromPerson(MedicalRecord record) {
-//		Person person = personRepository.findByMedicalId(medicalId.toString());
-//		if(person!=null) {
-//			person.setMedicalRecord(null);
-//			personRepository.save(person);
-//			return true;
-//		}
-//		return false;
-		record.getPerson().setMedicalRecord(null);
+	private boolean dettachMedicalFromPerson(MedicalRecord record) {
+		Person person = personRepository.findByMedicalId(record.getId().toString());
+		if(person!=null) {
+			person.setMedicalRecord(null);
+			personRepository.save(person);
+			return true;
+		}
+		return false;
+//		record.getPerson().setMedicalRecord(null);
+	}
+
+	@Override
+	public MedicalRecord getMedicalById(Long id) {
+		return medicalRepository.findOneById(id);
 	}
 
 }

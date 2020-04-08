@@ -7,22 +7,17 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
-import com.safetyalert.exception.MedicalRecordAlreadyExists;
-import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.exception.RequestBodyException;
 import com.safetyalert.exception.StationAlreadyExists;
 import com.safetyalert.exception.StationNotFoundException;
 import com.safetyalert.model.FireStation;
-import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
 
 @Service
-public class StationService {
-	private static final Logger logger = LogManager.getLogger("MedicalService");
+public class StationServiceImpl implements IStationService{
+	private static final Logger logger = LogManager.getLogger("StationServiceImpl");
 	@Autowired
 	private StationRepository stationRepository;
 
@@ -33,12 +28,26 @@ public class StationService {
 		String address = station.getAddress();
 		if (isAddressCovered(address)) {
 			throw new StationAlreadyExists("cannot create new station, because address:" + address
-					+ " is already covered by station:" + station.getStation());
+					+ " is already covered by a station");
 		}
-		return stationRepository.save(station);
+		
+		FireStation saved = stationRepository.save(station);
+		attachStationToPersons(saved);
+		
+		return saved;
 	}
 	
 	
+	private void attachStationToPersons(FireStation station) {
+		String address = station.getAddress();
+		List<Person> persons = personRepository.findByAddress(address);
+		for(Person person : persons) {
+			person.setFireStation(station);
+			personRepository.save(person);
+		}
+	}
+
+
 	private boolean isAddressCovered(String address) {
 		FireStation foundStation = stationRepository.findOneByAddress(address);
 		return foundStation!=null;
@@ -47,8 +56,10 @@ public class StationService {
 	public FireStation updateStation(FireStation station) throws StationNotFoundException, StationAlreadyExists {
 		Long id = station.getId();
 		if (id != null) {
+			logger.info("idfound");
 			return updateStationWithId(station);
 		} else {
+			logger.info("noidfound");
 			return updateStationWithAddress(station);
 		}
 	}
@@ -74,14 +85,15 @@ public class StationService {
 		if(foundStation==null) {
 			throw new StationNotFoundException("id not found in table station : "+id);
 		}
-		String oldAddress = foundStation.getAddress();
-		String newAddress = newStation.getAddress();
+		String oldId = foundStation.getId()+foundStation.getAddress();
+		String newId = newStation.getId()+newStation.getAddress();
 		foundStation.setStation(newStation.getStation());
 		
-		if(newAddress.equals(oldAddress)){
+		if(newId.equals(oldId)){
 			return stationRepository.save(foundStation);
 		}				
-			
+		
+		String newAddress = newStation.getAddress();
 		if(!canCreateStation(newAddress)) { 
 			throw new StationAlreadyExists("cannot update new station, because address:" + newAddress
 				+ " already covered by a station");
@@ -124,6 +136,11 @@ public class StationService {
 		for(Person person : persons) {
 			person.setFireStation(null);
 		}
+	}
+
+
+	public FireStation getStationById(Long id) {
+		return stationRepository.findOneById(id);
 	}
 
 }

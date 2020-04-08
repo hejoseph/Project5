@@ -8,93 +8,49 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
-import com.safetyalert.exception.MedicalRecordNotFoundException;
-import com.safetyalert.jsonfilter.ChildAlertFilter;
-import com.safetyalert.jsonfilter.CommunityEmailFilter;
-import com.safetyalert.jsonfilter.FirePersonFilter;
-import com.safetyalert.jsonfilter.FireStationFilter;
-import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
-import com.safetyalert.jsonfilter.MedicalRecordFilter;
-import com.safetyalert.jsonfilter.PersonInfoFilter;
-import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
-import com.safetyalert.service.MedicalService;
-import com.safetyalert.service.PersonService;
+import com.safetyalert.service.IPersonService;
 
 @RestController
 public class SafetyAlertController {
 
 	private static final Logger logger = LogManager.getLogger("SafetyAlertController");
 
-	private final PersonService personService;
-	private final MedicalService medicalService;
-	private final PersonRepository personRepository;
-	private final MedicalRepository medicalRepository;
-	private final StationRepository stationRepository;
-
 	@Autowired
-	public SafetyAlertController(PersonService personService, MedicalService medicalService,  
-			PersonRepository personRepository, MedicalRepository medicalRepository, StationRepository stationRepository) {
-		this.personService = personService;
-		this.medicalService = medicalService;
-		this.personRepository = personRepository;
-		this.medicalRepository = medicalRepository;
-		this.stationRepository = stationRepository;
-	}
+	private IPersonService personService;
+	@Autowired
+	private PersonRepository personRepository;
+	@Autowired
+	private MedicalRepository medicalRepository;
+	@Autowired
+	private StationRepository stationRepository;
 
-	@GetMapping("/medical")
+	@GetMapping("/medicalAll")
 	public List<MedicalRecord> medical() {
 		return (List<MedicalRecord>) medicalRepository.findAll();
 	}
 
-	@GetMapping("/station")
+	@GetMapping("/stationAll")
 	public List<FireStation> station() {
 		List<FireStation> stations = (List<FireStation>) stationRepository.findAll();
 		logger.info(stations.get(0).getPerson());
 		return stations;
 	}
 
-	@GetMapping("/person")
+	@GetMapping("/personAll")
 	public List<Person> person() {
 		return (List<Person>) personRepository.findAll();
-	}
-
-	@GetMapping("/person2")
-	public List<Person> personByStation(@RequestParam String station) {
-		return (List<Person>) personRepository.findByFireStation_Station(station);
-	}
-
-	@GetMapping("/person3")
-	public List<Person> personByStations(@RequestParam String[] stations) {
-		return (List<Person>) personRepository.findByFireStation_StationIn(stations);
-	}
-	
-//	@GetMapping("/person4")
-//	public Person person4(@RequestParam String firstName, @RequestParam String lastName, @RequestParam String birthDate) {
-//		return personRepository.findByFirstNameAndLastNameAndBirthDate(firstName, lastName, birthDate);
-//	}
-
-	@GetMapping("/address")
-	public List<String> address(@RequestParam String[] stations) {
-		return personRepository.findDistinctAddressesByStations(stations);
 	}
 
 	@GetMapping("/all")
@@ -119,19 +75,12 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsCoveredByStation(stationNumber);
 		ObjectMapper mapper = new ObjectMapper();
 
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new StationNumberPersonFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 		String result = "";
 
 		Map<String, Object> map = new HashMap<>();
 
 		try {
-			String personDetails = mapper.writer(filterProvider).writeValueAsString(persons);
+			String personDetails = mapper.writer().writeValueAsString(persons);
 
 			String count = personService.countAdultChildren(persons);
 
@@ -156,13 +105,6 @@ public class SafetyAlertController {
 		Map map = personService.getChildrenByAddressAndRelatives(address);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new ChildAlertFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 
 		try {
 			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
@@ -197,15 +139,6 @@ public class SafetyAlertController {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new FirePersonFilter());
-			filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-			filterProvider.addFilter("FireStationFilter", new FireStationFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 
 		try {
 			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
@@ -233,10 +166,6 @@ public class SafetyAlertController {
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new FloodStationsPersonFilter());
-		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {
@@ -253,10 +182,6 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsByLastName(lastName);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new PersonInfoFilter());
-		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {
@@ -274,9 +199,6 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsByCity(city);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new CommunityEmailFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {
