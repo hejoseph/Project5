@@ -14,8 +14,8 @@ public interface IPersonService {
 	public Map<String, List<String>> getPhonesByStation(String stationNumber);
 	public List<Person> getPersonsByAddress(String address);
 	public List<Person> getPersonsFromStations(String[] stations);
-	public List<String> getUniqueAddressFromPersons(List<Person> persons);
-	public List<Person> retrievePersonFromAddress(List<Person> persons, String address);
+//	public List<String> getUniqueAddressFromPersons(List<Person> persons);
+//	public List<Person> retrievePersonFromAddress(List<Person> persons, String address);
 	public List<Person> getPersonsByLastName(String lastName);
 	public List<Person> getPersonsByCity(String city);
 	public List<String> getUniqueAddressesFromStations(String[] stations);

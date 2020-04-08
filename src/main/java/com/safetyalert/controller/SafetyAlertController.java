@@ -14,19 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
-import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
-import com.safetyalert.jsonfilter.ChildAlertFilter;
-import com.safetyalert.jsonfilter.CommunityEmailFilter;
-import com.safetyalert.jsonfilter.FirePersonFilter;
-import com.safetyalert.jsonfilter.FireStationFilter;
-import com.safetyalert.jsonfilter.FloodStationsPersonFilter;
-import com.safetyalert.jsonfilter.MedicalRecordFilter;
-import com.safetyalert.jsonfilter.PersonInfoFilter;
-import com.safetyalert.jsonfilter.StationNumberPersonFilter;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
@@ -85,19 +75,12 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsCoveredByStation(stationNumber);
 		ObjectMapper mapper = new ObjectMapper();
 
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new StationNumberPersonFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 		String result = "";
 
 		Map<String, Object> map = new HashMap<>();
 
 		try {
-			String personDetails = mapper.writer(filterProvider).writeValueAsString(persons);
+			String personDetails = mapper.writer().writeValueAsString(persons);
 
 			String count = personService.countAdultChildren(persons);
 
@@ -122,13 +105,6 @@ public class SafetyAlertController {
 		Map map = personService.getChildrenByAddressAndRelatives(address);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new ChildAlertFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 
 		try {
 			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
@@ -163,15 +139,6 @@ public class SafetyAlertController {
 
 		ObjectMapper mapper = new ObjectMapper();
 
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		if (showAll) {
-			filterProvider.addFilter("PersonFilter", SimpleBeanPropertyFilter.serializeAllExcept(""));
-		} else {
-			filterProvider.addFilter("PersonFilter", new FirePersonFilter());
-			filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-			filterProvider.addFilter("FireStationFilter", new FireStationFilter());
-		}
-		mapper.setFilterProvider(filterProvider);
 
 		try {
 			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
@@ -199,10 +166,6 @@ public class SafetyAlertController {
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new FloodStationsPersonFilter());
-		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {
@@ -219,10 +182,6 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsByLastName(lastName);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new PersonInfoFilter());
-		filterProvider.addFilter("MedicalRecordFilter", new MedicalRecordFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {
@@ -240,9 +199,6 @@ public class SafetyAlertController {
 		List<Person> persons = personService.getPersonsByCity(city);
 
 		ObjectMapper mapper = new ObjectMapper();
-		SimpleFilterProvider filterProvider = new SimpleFilterProvider();
-		filterProvider.addFilter("PersonFilter", new CommunityEmailFilter());
-		mapper.setFilterProvider(filterProvider);
 
 		String result = "";
 		try {

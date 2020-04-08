@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetyalert.dao.MedicalRepository;
-import com.safetyalert.dao.PersonDAO;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
 import com.safetyalert.model.FireStation;
@@ -25,9 +24,6 @@ import com.safetyalert.util.Util;
 public class LoadSafetyAlertData {
 
 	private static final Logger logger = LogManager.getLogger("LoadSafetyAlertData");
-
-	@Autowired
-	private PersonDAO personDAO;
 
 	@Autowired
 	private MedicalRepository medicalRepository;

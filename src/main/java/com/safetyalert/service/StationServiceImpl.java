@@ -7,18 +7,13 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
-import com.safetyalert.exception.MedicalRecordAlreadyExists;
-import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.exception.RequestBodyException;
 import com.safetyalert.exception.StationAlreadyExists;
 import com.safetyalert.exception.StationNotFoundException;
 import com.safetyalert.model.FireStation;
-import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
 
 @Service
 public class StationServiceImpl implements IStationService{
@@ -47,8 +42,10 @@ public class StationServiceImpl implements IStationService{
 	public FireStation updateStation(FireStation station) throws StationNotFoundException, StationAlreadyExists {
 		Long id = station.getId();
 		if (id != null) {
+			logger.info("idfound");
 			return updateStationWithId(station);
 		} else {
+			logger.info("noidfound");
 			return updateStationWithAddress(station);
 		}
 	}
@@ -74,14 +71,15 @@ public class StationServiceImpl implements IStationService{
 		if(foundStation==null) {
 			throw new StationNotFoundException("id not found in table station : "+id);
 		}
-		String oldAddress = foundStation.getAddress();
-		String newAddress = newStation.getAddress();
+		String oldId = foundStation.getId()+foundStation.getAddress();
+		String newId = newStation.getId()+newStation.getAddress();
 		foundStation.setStation(newStation.getStation());
 		
-		if(newAddress.equals(oldAddress)){
+		if(newId.equals(oldId)){
 			return stationRepository.save(foundStation);
 		}				
-			
+		
+		String newAddress = newStation.getAddress();
 		if(!canCreateStation(newAddress)) { 
 			throw new StationAlreadyExists("cannot update new station, because address:" + newAddress
 				+ " already covered by a station");

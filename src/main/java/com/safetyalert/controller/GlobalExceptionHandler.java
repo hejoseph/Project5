@@ -12,6 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 import com.safetyalert.exception.MedicalRecordAlreadyExists;
 import com.safetyalert.exception.PersonAlreadyExists;
 import com.safetyalert.exception.StationAlreadyExists;
+import com.safetyalert.exception.StationNotFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -20,7 +21,6 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler({ StationAlreadyExists.class})
     public final ResponseEntity<?> handleException(Exception ex, WebRequest request) {
-		logger.info("handle exception station already exists ");
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		StationAlreadyExists e = (StationAlreadyExists)ex;
@@ -30,7 +30,6 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler({ MedicalRecordAlreadyExists.class})
     public final ResponseEntity<?> createSameMedicalException(Exception ex, WebRequest request) {
-		logger.info("handle exception station already exists ");
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		MedicalRecordAlreadyExists e = (MedicalRecordAlreadyExists)ex;
@@ -40,10 +39,18 @@ public class GlobalExceptionHandler {
 	
 	@ExceptionHandler({ PersonAlreadyExists.class})
     public final ResponseEntity<?> createSamePersonException(Exception ex, WebRequest request) {
-		logger.info("handle exception station already exists ");
 		HttpHeaders headers = new HttpHeaders();
 		HttpStatus status = HttpStatus.FOUND;
 		PersonAlreadyExists e = (PersonAlreadyExists)ex;
+//		List<String> errors = Collections.singletonList(ex.getMessage());
+		return new ResponseEntity<>(ex.getMessage(), headers, status);
+	}
+	
+	@ExceptionHandler({ StationNotFoundException.class})
+    public final ResponseEntity<?> updateStationWithUnknownIdException(Exception ex, WebRequest request) {
+		HttpHeaders headers = new HttpHeaders();
+		HttpStatus status = HttpStatus.FOUND;
+		StationNotFoundException e = (StationNotFoundException)ex;
 //		List<String> errors = Collections.singletonList(ex.getMessage());
 		return new ResponseEntity<>(ex.getMessage(), headers, status);
 	}

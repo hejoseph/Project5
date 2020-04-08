@@ -110,6 +110,19 @@ public class StationControllerTest {
 	}
 	
 	@Test
+	public void testUpdateStationByUnknownId() throws Exception {
+		FireStationDto station = new FireStationDto(99999L,"","new Station");
+		String response = this.mockMvc.perform(put("/firestation")
+				.content(Util.asJsonString(station))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+//				.andExpect(jsonPath("$.content", is("cannot ...")));
+		assertTrue(response.startsWith("id not found"));
+	}
+	
+	@Test
 	public void testUpdateStationByAddress() throws Exception {
 		String json = createStation("address123", "station1");
 		FireStationDto created = Util.parseJsonString(json, FireStationDto.class);
@@ -123,6 +136,36 @@ public class StationControllerTest {
 		assertEquals(found.getStation(),updated.getStation());
 		assertEquals(found.getId(),created.getId());
 		assertNotEquals(found.getStation(),created.getStation());
+	}
+	
+	@Test
+	public void testUpdateStationWithExistingAddress() throws Exception {
+		String json = createStation("abc abc", "station2");
+		FireStationDto created1 = Util.parseJsonString(json, FireStationDto.class);
+		
+		String json2 = createStation("abc 123", "station1");
+		FireStationDto created2 = Util.parseJsonString(json2, FireStationDto.class);
+		created2.setAddress(created1.getAddress());
+		
+		String response = this.mockMvc.perform(put("/firestation")
+				.content(Util.asJsonString(created2))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		logger.info("#abc : "+response);
+		assertTrue(response.startsWith("cannot update new station"));
+	}
+	
+	@Test
+	public void testUpdateStationWithNewAddress() throws Exception {
+		String json = createStation("abc abc", "station1");
+		FireStationDto created = Util.parseJsonString(json, FireStationDto.class);
+		
+		created.setAddress("UPDATE WITH NEW ADDRESS");
+		FireStationDto updated = updateStation(created);
+		assertEquals(created.getId(), updated.getId());
+		assertEquals(created.getAddress(), updated.getAddress());
 	}
 	
 	@Test
@@ -140,6 +183,45 @@ public class StationControllerTest {
 				.andReturn().getResponse().getContentAsString();
 		FireStation found = stationService.getStationById(created.getId());
 		assertNull(found);
+	}
+	
+	@Test
+	public void testDeleteStationByAddress() throws Exception {
+		String address = "deletemyaddress1";
+		String station = "deletemystation1";
+		String json = createStation(address, station);
+		FireStationDto created = Util.parseJsonString(json, FireStationDto.class);
+		
+		this.mockMvc.perform(delete("/firestation")
+				.content(Util.asJsonString(new FireStationDto(null, created.getAddress(), null)))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		FireStation found = stationService.getStationById(created.getId());
+		assertNull(found);
+	}
+	
+	@Test
+	public void testDeleteStationByUnknownAddress() throws Exception {
+		String response = this.mockMvc.perform(delete("/firestation")
+				.content(Util.asJsonString(new FireStationDto(null, "dfsdfsdf", null)))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		assertTrue(response.startsWith("cannot delete, no station found"));
+	}
+	
+	@Test
+	public void testDeleteStationByUnknownId() throws Exception {
+		String response = this.mockMvc.perform(delete("/firestation")
+				.content(Util.asJsonString(new FireStationDto(1239213L, null, null)))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print())
+				.andReturn().getResponse().getContentAsString();
+		assertTrue(response.startsWith("cannot delete, no station found"));
 	}
 
 }

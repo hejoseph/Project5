@@ -12,7 +12,6 @@ import com.safetyalert.exception.MedicalRecordNotFoundException;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.MedicalRecordDto;
 import com.safetyalert.model.Person;
-import com.safetyalert.model.id.PersonId;
 import com.safetyalert.util.Util;
 
 @Service
