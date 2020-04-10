@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -161,6 +162,29 @@ public class PersonStationMedicalTest {
 		
 		FireStationDto stationCreated = createStation("myNewAddress", "station1");
 		found = personService.getPersonById(personCreated.getId());
+		assertNotNull(found.getFireStation());
+	}
+	
+	@Test
+	public void integrationTest2() throws Exception {
+		MedicalRecord record = new MedicalRecord(null, "Joseph22", "He22", "01/01/1994", 
+				Arrays.asList("rien"), 
+				Arrays.asList("rien"));
+		MedicalRecord medicalCreated = createMedical(record);
+		Person found = personService.getPersonByMedicalId(medicalCreated.getId());
+		assertNull(found);
+		
+		FireStationDto stationCreated = createStation("myNewAddress22", "station1");
+		List<Person> founds = personService.getPersonByStationId(stationCreated.getId());
+		assertNotNull(founds);
+		assertEquals(founds.size(),0);
+		
+		String json = "{\"firstName\": \"Joseph22\",\"lastName\": \"He22\",\"address\": \"myNewAddress22\",\"city\": \"Culverss\",\"zip\": \"97451\",\"phone\": \"841-874-6512\",\"email\": \"jaboyd@email.com\",\"age\": 36}";
+		Person person = Util.parseJsonString(json, Person.class);
+		Person personCreated = createPerson(person);
+		found = personService.getPersonById(personCreated.getId());
+		assertNotNull(found);
+		assertNotNull(found.getMedicalRecord());
 		assertNotNull(found.getFireStation());
 	}
 	

@@ -24,4 +24,9 @@ public interface IPersonService {
 	public Person createPerson(Person person) throws PersonAlreadyExists;
 	public Person updatePerson(Person person);
 	public Person deletePerson(Person person);
+	public Person deletePerson(String firstName, String lastName);
+	public Person deletePerson(Long id);
+	public Person getPersonByMedicalId(Long id);
+	public List<Person> getPersonByStationId(Long id);
+	
 }

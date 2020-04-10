@@ -30,7 +30,7 @@
         </dependency>
         
         <dependency>
-            <groupId>com.h2database</groupId>
+         	<groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
@@ -72,7 +72,7 @@
 		<dependency>
 		    <groupId>com.googlecode.jmapper-framework</groupId>
 		    <artifactId>jmapper-core</artifactId>
-		    <version>1.6.0.1</version>
+		    <version>1.6.1.CR2</version>
 		</dependency>
 		
 		<dependency>

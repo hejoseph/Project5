@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,7 @@ import com.safetyalert.model.FireStation;
 import com.safetyalert.service.IStationService;
 
 @RestController
+@RequestMapping(consumes = "application/json", produces = "application/json")
 public class StationController {
 
 	private static final Logger logger = LogManager.getLogger("StationController");
@@ -31,19 +33,26 @@ public class StationController {
 
 	@PostMapping("/firestation")
 	public FireStation createStation(@RequestBody FireStation station) throws StationAlreadyExists{
-		return stationService.createStation(station);
+		logger.info("Post Request : \n /firestation\n"+station);
+		FireStation result = stationService.createStation(station);
+		logger.info("Response : \n "+result);
+		return result;
 	}
 	
 	@PutMapping("/firestation")
 	public FireStation updateStation(@RequestBody FireStation station) throws StationNotFoundException, StationAlreadyExists{
-		return stationService.updateStation(station);
+		logger.info("Put Request : \n /firestation\n"+station);
+		FireStation result = stationService.updateStation(station);
+		logger.info("Response : \n "+result);
+		return result;
 	}
 	
 	@DeleteMapping("/firestation")
 	public String deleteStation(@RequestBody FireStation station) throws StationNotFoundException{
+		logger.info("Delete Request : \n /firestation\n"+station);
 		FireStation deleted = stationService.deleteStation(station);
 		String msg = "station deleted : "+deleted;
-		logger.info(msg);
+		logger.info("Response : \n "+msg);
 		return msg;
 	}
 

@@ -289,4 +289,29 @@ public class PersonServiceImpl implements IPersonService{
 		return personRepository.findByFirstNameAndLastName(firstName, lastName);
 	}
 
+	@Override
+	public Person getPersonByMedicalId(Long id) {
+		return personRepository.findByMedicalId(id.toString());
+	}
+
+	@Override
+	public List<Person> getPersonByStationId(Long id) {
+		return personRepository.findByStationId(id.toString());
+	}
+
+	@Override
+	public Person deletePerson(String firstName, String lastName) {
+		Person person = new Person();
+		person.setFirstName(firstName);
+		person.setLastName(lastName);
+		return deletePersonByFirstAndLastName(person);
+	}
+
+	@Override
+	public Person deletePerson(Long id) {
+		Person person = new Person();
+		person.setId(id);
+		return deletePersonById(person);
+	}
+
 }
