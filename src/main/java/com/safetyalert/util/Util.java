@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.googlecode.jmapper.JMapper;
 import com.googlecode.jmapper.api.JMapperAPI;
+import com.safetyalert.dto.FloodStationDto;
+import com.safetyalert.model.MedicalRecordDto;
+import com.safetyalert.model.Person;
 
 public class Util {
 	
@@ -27,13 +30,18 @@ public class Util {
 		if(fromList.size()==0) {
 			return null;
 		}
-		JMapperAPI simpleApi = new JMapperAPI().add(JMapperAPI.mappedClass(destClass));
-		JMapper simpleMapper = new JMapper(destClass, fromList.get(0).getClass(), simpleApi);
-		List<D> result = new ArrayList<D>();
-		for(S from : fromList) {
-			result.add((D) simpleMapper.getDestination(from));
+		try {
+			JMapperAPI simpleApi = new JMapperAPI().add(JMapperAPI.mappedClass(destClass));
+			JMapper simpleMapper = new JMapper(destClass, fromList.get(0).getClass(), simpleApi);
+			List<D> result = new ArrayList<D>();
+			for(S from : fromList) {
+				result.add((D) simpleMapper.getDestination(from));
+			}
+			return result;
+		}catch(Exception e) {
+			logger.error("cannot copy list object",e);
 		}
-		return result;
+		return null;
 	}
 	
 	public static String asJsonString(final Object obj) {
@@ -65,6 +73,20 @@ public class Util {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 		LocalDate localDate = LocalDate.parse(birthDate, formatter);
 		return Period.between(localDate, today).getYears();
+	}
+
+	public static List<FloodStationDto> copyToFloodStation(List<Person> temp) {
+		List<FloodStationDto> result = new ArrayList<FloodStationDto>();
+		for(Person person : temp) {
+			FloodStationDto station = new FloodStationDto();
+			station.setAge(person.getAge());
+			station.setLastName(person.getLastName());
+			com.safetyalert.dto.MedicalDto dto = Util.copyObject(person.getMedicalRecord(), com.safetyalert.dto.MedicalDto.class);
+			station.setMedicalRecord(dto);
+			station.setPhone(person.getPhone());
+			result.add(station);
+		}
+		return result;
 	}
 	
 }

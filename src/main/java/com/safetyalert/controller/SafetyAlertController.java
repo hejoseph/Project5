@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -17,10 +18,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetyalert.dao.MedicalRepository;
 import com.safetyalert.dao.PersonRepository;
 import com.safetyalert.dao.StationRepository;
+import com.safetyalert.dto.CommunityEmailDto;
+import com.safetyalert.dto.FireDto;
+import com.safetyalert.dto.FloodStationDto;
+import com.safetyalert.dto.PersonInfoDto;
+import com.safetyalert.dto.StationNumberDto;
 import com.safetyalert.model.FireStation;
 import com.safetyalert.model.MedicalRecord;
 import com.safetyalert.model.Person;
 import com.safetyalert.service.IPersonService;
+import com.safetyalert.util.Util;
 
 @RestController
 public class SafetyAlertController {
@@ -69,18 +76,25 @@ public class SafetyAlertController {
 		return links;
 	}
 
-	@GetMapping("/firestation")
+	@GetMapping(path = "/firestation", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPersonsByStationNumberFilteredProperties(@RequestParam String stationNumber,
 			@RequestParam(required = false) boolean showAll) {
+		
+		logger.info("Request : \n /firestation?stationNumber="+stationNumber);
+		
 		List<Person> persons = personService.getPersonsCoveredByStation(stationNumber);
 		ObjectMapper mapper = new ObjectMapper();
 
+		
+		List<StationNumberDto> dto = Util.copyListObject(persons, StationNumberDto.class);
+		
 		String result = "";
 
 		Map<String, Object> map = new HashMap<>();
 
 		try {
-			String personDetails = mapper.writer().writeValueAsString(persons);
+			String personDetails = mapper.writer().writeValueAsString(dto);
 
 			String count = personService.countAdultChildren(persons);
 
@@ -95,29 +109,47 @@ public class SafetyAlertController {
 		} catch (IOException e) {
 			logger.error("error", e);
 		}
+		
+		logger.info("Response : \n "+result);
+		
 		return result;
 	}
 
-	@GetMapping("/childAlert")
+	@GetMapping(path = "/childAlert", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getChildrenByAddress(@RequestParam String address, @RequestParam(required = false) boolean showAll) {
+		logger.info("Request : \n /childAlert?address="+address);
+		
 		String result = "";
 
-		Map map = personService.getChildrenByAddressAndRelatives(address);
-
+		Map<String, List<Person>> map = personService.getChildrenByAddressAndRelatives(address);
+		Map<String, List<StationNumberDto>> map2 = new HashMap<>();
+//		
+		for(Map.Entry<String, List<Person>> entry : map.entrySet()) {
+			String key = entry.getKey();
+			List<Person> persons = entry.getValue();
+			List<StationNumberDto> copied = Util.copyListObject(persons, StationNumberDto.class);
+			map2.put(key, copied);
+		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 
 		try {
-			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map2);
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
 
+		logger.info("Response : \n "+result);
+		
 		return result;
 	}
 
-	@GetMapping("/phoneAlert")
+	@GetMapping(path = "/phoneAlert", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPhonesByStation(@RequestParam String firestation,
 			@RequestParam(required = false) boolean showAll) {
+		logger.info("Request : \n /phoneAlert?firestation="+firestation);
 		String result = "";
 		Map map = personService.getPhonesByStation(firestation);
 		ObjectMapper mapper = new ObjectMapper();
@@ -126,43 +158,44 @@ public class SafetyAlertController {
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
+		
+		logger.info("Response : \n "+result);
 		return result;
 	}
 
-	@GetMapping("/fire")
+	@GetMapping(path = "/fire", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPersonsByAddress(@RequestParam String address, @RequestParam(required = false) boolean showAll) {
-		logger.info("fire/");
-		logger.debug("fire2/");
-
+		logger.info("Request : \n /fire?address="+address);
 		String result = "";
 		List<Person> persons = personService.getPersonsByAddress(address);
 
+		List<FireDto> copied = Util.copyListObject(persons, FireDto.class);
+		
 		ObjectMapper mapper = new ObjectMapper();
 
-
 		try {
-			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(copied);
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
-
+		logger.info("Response : \n "+result);
 		return result;
 	}
 
-	@GetMapping("/flood/stations")
+	@GetMapping(path = "/flood/stations", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPersonsByStationsGroupByAddress(@RequestParam String[] stations) {
+		logger.info("Request : \n /flood/stations?stations="+stations);
 		List<Person> persons = personService.getPersonsFromStations(stations);
 
-		logger.info(stations.length);
-		logger.info(persons.size());
-		// List<String> addresses = personService.getUniqueAddressFromPersons(persons);
 		List<String> addresses = personService.getUniqueAddressesFromStations(stations);
 		Map<String, Object> map = new HashMap<>();
 		for (String address : addresses) {
-			// List<Person> temp = personService.retrievePersonFromAddress(persons,
-			// address);
 			List<Person> temp = personService.getPersonsByAddress(address);
-			map.put(address, temp);
+//			List<FloodStationDto> copied = Util.copyToFloodStation(temp);
+			List<FloodStationDto> copied = Util.copyListObject(temp, FloodStationDto.class);
+			map.put(address, copied);
 		}
 
 		ObjectMapper mapper = new ObjectMapper();
@@ -173,40 +206,48 @@ public class SafetyAlertController {
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
-
+		logger.info("Response : \n "+result);
 		return result;
 	}
 
-	@GetMapping("/personInfo")
+	@GetMapping(path = "/personInfo", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPersonsByStationsGroupByAddress(@RequestParam String firstName, @RequestParam String lastName) {
+		logger.info("Request : \n /personInfo?firstName="+firstName+"&lastName="+lastName);
 		List<Person> persons = personService.getPersonsByLastName(lastName);
 
+		List<PersonInfoDto> copied = Util.copyListObject(persons, PersonInfoDto.class);
+		
 		ObjectMapper mapper = new ObjectMapper();
 
 		String result = "";
 		try {
-			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(copied);
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
-
+		logger.info("Response : \n "+result);
 		return result;
 
 	}
 
-	@GetMapping("/communityEmail")
+	@GetMapping(path = "/communityEmail", produces = "application/json; charset=UTF-8")
+	@ResponseBody
 	public String getPersonsByStationsGroupByAddress(@RequestParam String city) {
+		logger.info("Request : \n /communityEmail?city="+city);
 		List<Person> persons = personService.getPersonsByCity(city);
 
+		List<CommunityEmailDto> copied = Util.copyListObject(persons, CommunityEmailDto.class);
+		
 		ObjectMapper mapper = new ObjectMapper();
 
 		String result = "";
 		try {
-			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(persons);
+			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(copied);
 		} catch (JsonProcessingException e) {
 			logger.error("cannot write json to string", e);
 		}
-
+		logger.info("Response : \n "+result);
 		return result;
 	}
 
