@@ -38,19 +38,6 @@ public class PersonControllerTest {
 	@Autowired
 	private IPersonService personService;
 	
-	private Person createPerson(Person person) throws Exception {
-		System.out.println("creating ...");
-		MvcResult result = this.mockMvc.perform(post("/person")
-					.content(Util.asJsonString(person))
-					.contentType(MediaType.APPLICATION_JSON)
-					.accept(MediaType.APPLICATION_JSON))
-					.andReturn();
-		System.out.println("end post creating ...");
-		String json = result.getResponse().getContentAsString();
-		System.out.println("JSON="+json);
-		return Util.parseJsonString(json, Person.class);
-	}
-	
 	@Test
 	public void testCreatePerson() throws Exception{
 		String json = "{\"firstName\": \"Person1\",\"lastName\": \"Person1\",\"address\": \"1509 Culverss Sts\",\"city\": \"Culverss\",\"zip\": \"97451\",\"phone\": \"841-874-6512\",\"email\": \"jaboyd@email.com\",\"age\": 36}";
@@ -58,6 +45,18 @@ public class PersonControllerTest {
 		Person created = createPerson(person);
 		Person found = personService.getPersonById(created.getId());
 		assertNotNull(found);
+	}
+	
+	private Person createPerson(Person person) throws Exception {
+		logger.info("creating ...");
+		MvcResult result = this.mockMvc.perform(post("/person")
+					.content(Util.asJsonString(person))
+					.contentType(MediaType.APPLICATION_JSON)
+					.accept(MediaType.APPLICATION_JSON))
+					.andReturn();
+		logger.info("end post creating ...");
+		String json = result.getResponse().getContentAsString();
+		return Util.parseJsonString(json, Person.class);
 	}
 	
 	@Test
@@ -71,28 +70,9 @@ public class PersonControllerTest {
 				.accept(MediaType.APPLICATION_JSON))
 				.andDo(print())
 				.andReturn().getResponse().getContentAsString();
-//				.andExpect(jsonPath("$.content", is("cannot ...")));
 		assertTrue(response.startsWith("cannot create"));
 	}
 	
-	private Person updatePerson(Person person) throws Exception {
-		MvcResult result = this.mockMvc.perform(put("/person")
-				.content(Util.asJsonString(person))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-//				.andExpect(jsonPath("$.id").exists())
-				.andReturn();
-		String json = result.getResponse().getContentAsString();
-		return Util.parseJsonString(json, Person.class);
-	}
-	
-	private void deletePerson(Person person) throws Exception {
-		this.mockMvc.perform(delete("/person")
-				.content(Util.asJsonString(person))
-				.contentType(MediaType.APPLICATION_JSON)
-				.accept(MediaType.APPLICATION_JSON))
-				.andDo(print());
-	}
 	
 	@Test
 	public void testUpdatePersonByFirstAndLastName() throws Exception{
@@ -152,6 +132,16 @@ public class PersonControllerTest {
 		assertEquals(found.getFirstName(),created1.getFirstName());
 	}
 	
+	private Person updatePerson(Person person) throws Exception {
+		MvcResult result = this.mockMvc.perform(put("/person")
+				.content(Util.asJsonString(person))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andReturn();
+		String json = result.getResponse().getContentAsString();
+		return Util.parseJsonString(json, Person.class);
+	}
+	
 	@Test
 	public void testDeletePersonById() throws Exception{
 		String json = "{\"firstName\": \"Person4\",\"lastName\": \"Person4\",\"address\": \"1509 Culverss Sts\",\"city\": \"Culverss\",\"zip\": \"97451\",\"phone\": \"841-874-6512\",\"email\": \"jaboyd@email.com\",\"age\": 36}";
@@ -175,4 +165,16 @@ public class PersonControllerTest {
 		found = personService.getPersonByFirstAndLastName(person.getFirstName(),person.getLastName());
 		assertNull(found);
 	}
+	
+	private void deletePerson(Person person) throws Exception {
+		this.mockMvc.perform(delete("/person")
+				.content(Util.asJsonString(person))
+				.contentType(MediaType.APPLICATION_JSON)
+				.accept(MediaType.APPLICATION_JSON))
+				.andDo(print());
+	}
+	
+	
+	
+	
 }

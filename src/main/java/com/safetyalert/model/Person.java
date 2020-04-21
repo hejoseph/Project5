@@ -39,11 +39,9 @@ public class Person {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name="station_id")
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	private FireStation fireStation;
 	
 	@OneToOne(fetch = FetchType.LAZY)
-	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	@JoinColumn(name="medical_id")
 	private MedicalRecord medicalRecord;
 	

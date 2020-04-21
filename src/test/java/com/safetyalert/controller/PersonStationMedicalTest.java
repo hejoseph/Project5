@@ -152,6 +152,7 @@ public class PersonStationMedicalTest {
 		Person personCreated = createPerson(person);
 		Person found = personService.getPersonById(personCreated.getId());
 		assertNull(found.getMedicalRecord());
+		assertNull(found.getFireStation());
 		
 		MedicalRecord record = new MedicalRecord(null, "Joseph", "He", "01/01/1994", 
 				Arrays.asList("rien"), 
