@@ -42,19 +42,13 @@ public class MedicalControllerTest {
 	private IMedicalService medicalService;
 	
 	private MedicalRecord createMedical(MedicalRecord record) throws Exception {
-		System.out.println("creating ...");
+		logger.info("creating ...");
 		MvcResult result = this.mockMvc.perform(post("/medicalRecord")
 					.content(Util.asJsonString(record))
 					.contentType(MediaType.APPLICATION_JSON)
 					.accept(MediaType.APPLICATION_JSON))
-//					.andExpect(jsonPath("$.id").exists())
-//					.andExpect(jsonPath("$.firstName").exists())
-//					.andExpect(jsonPath("$.lastName").exists())
-//					.andExpect(jsonPath("$.birthdate").exists())
-//					.andExpect(jsonPath("$.medications").exists())
-//					.andExpect(jsonPath("$.allergies").exists())
 					.andReturn();
-		System.out.println("end post creating ...");
+		logger.info("end post creating ...");
 		String json = result.getResponse().getContentAsString();
 		return Util.parseJsonString(json, MedicalRecord.class);
 	}

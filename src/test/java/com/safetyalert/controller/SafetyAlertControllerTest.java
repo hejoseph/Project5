@@ -21,29 +21,24 @@ import static org.hamcrest.Matchers.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-// @TestPropertySource(
-// locations = "classpath:application-integrationtest.properties")
 public class SafetyAlertControllerTest {
 	@Autowired
 	private MockMvc mockMvc;
-
-//	@Test
-//	public void testTotalMedicalRecords() throws Exception {
-//		this.mockMvc.perform(get("/medicalAll"))
-//			.andDo(print())
-//			.andExpect(status().isOk())
-//			.andExpect(jsonPath("$", hasSize(23)));
-//	}
-	
 	
 	@Test
 	public void testFireStationEndpoint() throws Exception {
 		this.mockMvc.perform(get("/firestation?stationNumber=1"))
 			.andDo(print())
 			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.personDetails").exists())
 			.andExpect(jsonPath("$.personDetails", hasSize(6)))
-//			.andExpect(jsonPath("$.personDetails[0].fireStation.station").value("1"))
+			.andExpect(jsonPath("$.personDetails[0].firstName").exists())
+			.andExpect(jsonPath("$.personDetails[0].lastName").exists())
+			.andExpect(jsonPath("$.personDetails[0].address").exists())
+			.andExpect(jsonPath("$.personDetails[0].phone").exists())
+			.andExpect(jsonPath("$.count.child").exists())
 			.andExpect(jsonPath("$.count.child").value("1"))
+			.andExpect(jsonPath("$.count.adult").exists())
 			.andExpect(jsonPath("$.count.adult").value("5"));
 	}
 	

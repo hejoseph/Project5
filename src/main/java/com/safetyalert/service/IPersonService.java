@@ -9,7 +9,7 @@ import com.safetyalert.model.Person;
 public interface IPersonService {
 	public List<Person> getAllPeople();
 	public List<Person> getPersonsCoveredByStation(String stationNumber);
-	public String countAdultChildren(List<Person> persons);
+	public Map<String, String> countAdultChildren(List<Person> persons);
 	public Map<String, List<Person>> getChildrenByAddressAndRelatives(String address);
 	public Map<String, List<String>> getPhonesByStation(String stationNumber);
 	public List<Person> getPersonsByAddress(String address);

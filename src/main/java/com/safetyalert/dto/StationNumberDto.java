@@ -32,5 +32,10 @@ public class StationNumberDto {
 	public void setPhone(String phone) {
 		this.phone = phone;
 	}
+	@Override
+	public String toString() {
+		return "StationNumberDto [firstName=" + firstName + ", lastName=" + lastName + ", address=" + address
+				+ ", phone=" + phone + "]";
+	}
 	
 }

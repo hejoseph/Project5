@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import com.safetyalert.model.Person;
 
+@Repository
 public interface PersonRepository extends CrudRepository<Person, Long>{
 	public static final String FIND_DISTINCT_ADDRESS_BY_STATION = "select distinct(p.address) from persons p, fire_stations fs where p.address like fs.address and fs.station in (:stations)";
 	public static final String FIND_BY_MEDICAL_ID = "select * from persons where persons.medical_id = :medicalId";

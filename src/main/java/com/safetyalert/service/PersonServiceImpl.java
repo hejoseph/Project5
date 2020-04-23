@@ -43,7 +43,7 @@ public class PersonServiceImpl implements IPersonService{
 		return personRepository.findByFireStation_Station(stationNumber);
 	}
 
-	public String countAdultChildren(List<Person> persons) {
+	public Map<String, String> countAdultChildren(List<Person> persons) {
 		String result = "";
 		int nbAdult = 0;
 		int nbChildren = 0;
@@ -55,19 +55,10 @@ public class PersonServiceImpl implements IPersonService{
 				nbChildren++;
 			}
 		}
-
 		Map<String, String> map = new HashMap<>();
 		map.put("adult", "" + nbAdult);
 		map.put("child", "" + nbChildren);
-
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			result += mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
-		} catch (JsonProcessingException e) {
-			logger.error("cannot map to json");
-		}
-
-		return result;
+		return map;
 	}
 	
 	public Map<String, List<Person>> getChildrenByAddressAndRelatives(String address) {

@@ -11,7 +11,7 @@
 	<groupId>com.example</groupId>
 	<artifactId>Project5</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rest-service</name>
+	<name>SafetyAlert</name>
 	<description>OpenClassrooms Project 5</description>
 
 	<properties>
@@ -143,6 +143,18 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-site-plugin</artifactId>
+		      <configuration>
+		        <reportPlugins>
+		          <plugin>
+		            <groupId>org.codehaus.mojo</groupId>
+		            <artifactId>findbugs-maven-plugin</artifactId>
+		          </plugin>
+		        </reportPlugins>
+		      </configuration>
+		    </plugin>
 		</plugins>
 	</build>
 
